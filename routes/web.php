@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\CategoryController;
 
 Route::get('/', function () {
     return redirect()->route('admin.dashboard');
@@ -23,7 +24,58 @@ Route::middleware(['auth'])
         })
         ->middleware('permission:dashboard.view')
         ->name('dashboard');
+/*
+|--------------------------------------------------------------------------
+| Categories
+|--------------------------------------------------------------------------
+*/
 
+Route::get(
+    '/categories',
+    [CategoryController::class, 'index']
+)
+    ->middleware('permission:categories.view')
+    ->name('categories.index');
+
+
+Route::get(
+    '/categories/create',
+    [CategoryController::class, 'create']
+)
+    ->middleware('permission:categories.create')
+    ->name('categories.create');
+
+
+Route::post(
+    '/categories',
+    [CategoryController::class, 'store']
+)
+    ->middleware('permission:categories.create')
+    ->name('categories.store');
+
+
+Route::get(
+    '/categories/{category}/edit',
+    [CategoryController::class, 'edit']
+)
+    ->middleware('permission:categories.edit')
+    ->name('categories.edit');
+
+
+Route::put(
+    '/categories/{category}',
+    [CategoryController::class, 'update']
+)
+    ->middleware('permission:categories.edit')
+    ->name('categories.update');
+
+
+Route::delete(
+    '/categories/{category}',
+    [CategoryController::class, 'destroy']
+)
+    ->middleware('permission:categories.delete')
+    ->name('categories.destroy');
         /*
         |--------------------------------------------------------------------------
         | User Management
