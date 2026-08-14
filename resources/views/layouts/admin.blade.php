@@ -302,6 +302,7 @@
             <div class="fw-bold">
                 Restaurant
             </div>
+        
 
             <small class="text-secondary">
                 Admin Panel
@@ -387,7 +388,22 @@
             Restaurant
         </div>
 
+@can('categories.view')
 
+    <a
+        href="{{ route('admin.categories.index') }}"
+        class="nav-link
+        {{ request()->routeIs('admin.categories.*')
+            ? 'active'
+            : '' }}">
+
+        <i class="bi bi-tags"></i>
+
+        Categories
+
+    </a>
+
+@endcan
         @can('menu.view')
 
             <a
