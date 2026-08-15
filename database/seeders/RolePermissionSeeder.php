@@ -40,6 +40,12 @@ class RolePermissionSeeder extends Seeder
             'kitchen.view',
             'kitchen.update-status',
 
+            'kots.view',
+            'kots.create',
+            'kots.edit',
+            'kots.delete',
+            'kots.print',
+
             // Menu
             'menu.view',
             'menu.create',
@@ -94,6 +100,16 @@ class RolePermissionSeeder extends Seeder
             // Settings
             'settings.view',
             'settings.edit',
+
+            'products.view',
+            'products.create',
+            'products.edit',
+            'products.delete',
+
+            'combos.view',
+            'combos.create',
+            'combos.edit',
+            'combos.delete',
         ];
 
         foreach ($permissions as $permission) {
@@ -140,6 +156,12 @@ class RolePermissionSeeder extends Seeder
             'orders.edit',
             'orders.update-status',
 
+            'kots.view',
+            'kots.create',
+            'kots.edit',
+            'kots.delete',
+            'kots.print',
+
             'pos.view',
             'pos.create-order',
 
@@ -161,6 +183,7 @@ class RolePermissionSeeder extends Seeder
             'reservations.view',
             'reservations.create',
             'reservations.edit',
+            'reservations.delete',
 
             'customers.view',
             'customers.create',
@@ -222,6 +245,10 @@ class RolePermissionSeeder extends Seeder
 
             'kitchen.view',
             'kitchen.update-status',
+
+            'kots.view',
+            'kots.edit',
+            'kots.print',
         ]);
 
         /*
