@@ -171,6 +171,7 @@ class RolePermissionSeeder extends Seeder
             'reservations.view',
             'reservations.create',
             'reservations.edit',
+            'reservations.delete',
 
             'customers.view',
             'customers.create',

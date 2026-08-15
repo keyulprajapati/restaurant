@@ -57,4 +57,12 @@ class RestaurantTable extends Model
             default => ucfirst($this->table_type),
         };
     }
+
+    public function reservations()
+    {
+        return $this->hasMany(
+            Reservation::class,
+            'restaurant_table_id'
+        );
+    }
 }

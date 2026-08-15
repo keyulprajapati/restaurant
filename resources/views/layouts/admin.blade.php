@@ -317,7 +317,7 @@
             @can('dashboard.view')
 
                 <a href="{{ route('admin.dashboard') }}" class="nav-link
-                        {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                                {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
 
                     <i class="bi bi-grid-1x2"></i>
 
@@ -374,7 +374,7 @@
             @can('categories.view')
 
                     <a href="{{ route('admin.categories.index') }}" class="nav-link
-                        {{ request()->routeIs('admin.categories.*')
+                                        {{ request()->routeIs('admin.categories.*')
                 ? 'active'
                 : '' }}">
 
@@ -389,7 +389,7 @@
             @can('products.view')
 
                 <a href="{{ route('admin.products.index') }}" class="nav-link
-                    {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+                            {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
 
                     <i class="bi bi-basket"></i>
 
@@ -403,7 +403,7 @@
             @can('combos.view')
 
                 <a href="{{ route('admin.combos.index') }}" class="nav-link
-                    {{ request()->routeIs('admin.combos.*') ? 'active' : '' }}">
+                            {{ request()->routeIs('admin.combos.*') ? 'active' : '' }}">
 
                     <i class="bi bi-boxes"></i>
 
@@ -415,21 +415,22 @@
 
             @can('tables.view')
 
-                    <a href="{{ route('admin.tables.index') }}" class="nav-link
-                {{ request()->routeIs('admin.tables.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.tables.index') }}" class="nav-link
+                        {{ request()->routeIs('admin.tables.*') ? 'active' : '' }}">
 
-                        <i class="bi bi-grid-3x3-gap"></i>
+                    <i class="bi bi-grid-3x3-gap"></i>
 
-                        Tables
+                    Tables
 
-                    </a>
+                </a>
 
             @endcan
 
 
             @can('reservations.view')
 
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.reservations.index') }}" class="nav-link
+                    {{ request()->routeIs('admin.reservations.*') ? 'active' : '' }}">
 
                     <i class="bi bi-calendar-check"></i>
 
@@ -442,13 +443,17 @@
 
             @can('customers.view')
 
-                <a href="#" class="nav-link">
+                <li class="nav-item">
 
-                    <i class="bi bi-people"></i>
+                    <a href="{{ route('admin.customers.index') }}" class="nav-link">
 
-                    Customers
+                        <i class="bi bi-people me-2"></i>
 
-                </a>
+                        Customers
+
+                    </a>
+
+                </li>
 
             @endcan
 
@@ -487,7 +492,7 @@
             @can('users.view')
 
                 <a href="{{ route('admin.users.index') }}" class="nav-link
-                        {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                                {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
 
                     <i class="bi bi-person-gear"></i>
 
@@ -500,7 +505,7 @@
             @can('roles.view')
 
                 <a href="{{ route('admin.roles.index') }}" class="nav-link
-                        {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
+                                {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
 
                     <i class="bi bi-shield-check"></i>
 
@@ -513,7 +518,7 @@
             @can('roles.view')
 
                 <a href="{{ route('admin.permissions.index') }}" class="nav-link
-                        {{ request()->routeIs('admin.permissions.*') ? 'active' : '' }}">
+                                {{ request()->routeIs('admin.permissions.*') ? 'active' : '' }}">
 
                     <i class="bi bi-key"></i>
 

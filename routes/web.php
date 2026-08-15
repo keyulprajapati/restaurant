@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ComboController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\RestaurantTableController;
+use App\Http\Controllers\Admin\ReservationController;
+use App\Http\Controllers\Admin\CustomerController;
 
 Route::get('/', function () {
     return redirect()->route('admin.dashboard');
@@ -315,6 +317,65 @@ Route::middleware(['auth'])
         )
             ->middleware('permission:tables.delete')
             ->name('tables.destroy');
+
+        Route::get(
+            '/reservations',
+            [ReservationController::class, 'index']
+        )
+            ->middleware('permission:reservations.view')
+            ->name('reservations.index');
+
+        Route::get(
+            '/reservations/create',
+            [ReservationController::class, 'create']
+        )
+            ->middleware('permission:reservations.create')
+            ->name('reservations.create');
+
+        Route::post(
+            '/reservations',
+            [ReservationController::class, 'store']
+        )
+            ->middleware('permission:reservations.create')
+            ->name('reservations.store');
+
+        Route::get(
+            '/reservations/{reservation}/edit',
+            [ReservationController::class, 'edit']
+        )
+            ->middleware('permission:reservations.edit')
+            ->name('reservations.edit');
+
+        Route::put(
+            '/reservations/{reservation}',
+            [ReservationController::class, 'update']
+        )
+            ->middleware('permission:reservations.edit')
+            ->name('reservations.update');
+
+        Route::delete(
+            '/reservations/{reservation}',
+            [ReservationController::class, 'destroy']
+        )
+            ->middleware('permission:reservations.delete')
+            ->name('reservations.destroy');
+
+        Route::get(
+            '/customers/search',
+            [ReservationController::class, 'searchCustomer']
+        )
+            ->middleware('permission:reservations.create')
+            ->name('customers.search');
+
+        Route::get(
+            'customers/search',
+            [CustomerController::class, 'search']
+        )->name('customers.search');
+
+        Route::resource(
+            'customers',
+            CustomerController::class
+        );
 
     });
 
