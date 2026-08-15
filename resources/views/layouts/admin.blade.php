@@ -330,7 +330,7 @@
 
             @can('orders.view')
 
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.orders.index') }}" class="nav-link">
 
                     <i class="bi bi-receipt"></i>
 
@@ -343,7 +343,7 @@
 
             @can('pos.view')
 
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.pos.index') }}" class="nav-link">
 
                     <i class="bi bi-display"></i>
 
@@ -356,7 +356,7 @@
 
             @can('kitchen.view')
 
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.kots.index') }}" class="nav-link">
 
                     <i class="bi bi-fire"></i>
 

@@ -40,6 +40,12 @@ class RolePermissionSeeder extends Seeder
             'kitchen.view',
             'kitchen.update-status',
 
+            'kots.view',
+            'kots.create',
+            'kots.edit',
+            'kots.delete',
+            'kots.print',
+
             // Menu
             'menu.view',
             'menu.create',
@@ -150,6 +156,12 @@ class RolePermissionSeeder extends Seeder
             'orders.edit',
             'orders.update-status',
 
+            'kots.view',
+            'kots.create',
+            'kots.edit',
+            'kots.delete',
+            'kots.print',
+
             'pos.view',
             'pos.create-order',
 
@@ -233,6 +245,10 @@ class RolePermissionSeeder extends Seeder
 
             'kitchen.view',
             'kitchen.update-status',
+
+            'kots.view',
+            'kots.edit',
+            'kots.print',
         ]);
 
         /*

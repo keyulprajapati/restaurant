@@ -11,6 +11,9 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\RestaurantTableController;
 use App\Http\Controllers\Admin\ReservationController;
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\PosController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\KotController;
 
 Route::get('/', function () {
     return redirect()->route('admin.dashboard');
@@ -376,6 +379,74 @@ Route::middleware(['auth'])
             'customers',
             CustomerController::class
         );
+
+        Route::get(
+            'pos',
+            [PosController::class, 'index']
+        )->name('pos.index');
+
+        Route::post(
+            'pos',
+            [PosController::class, 'store']
+        )->name('pos.store');
+
+        /*
+|--------------------------------------------------------------------------
+| Orders
+|--------------------------------------------------------------------------
+*/
+
+        Route::get(
+            'orders',
+            [OrderController::class, 'index']
+        )->name('orders.index');
+
+        Route::get(
+            'orders/{order}',
+            [OrderController::class, 'show']
+        )->name('orders.show');
+
+        Route::put(
+            'orders/{order}/status',
+            [OrderController::class, 'updateStatus']
+        )->name('orders.status');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | KOT
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            'kots',
+            [KotController::class, 'index']
+        )->name('kots.index');
+
+        Route::get(
+            'orders/{order}/kot/create',
+            [KotController::class, 'create']
+        )->name('kots.create');
+
+        Route::post(
+            'kots',
+            [KotController::class, 'store']
+        )->name('kots.store');
+
+        Route::get(
+            'kots/{kot}',
+            [KotController::class, 'show']
+        )->name('kots.show');
+
+        Route::put(
+            'kots/{kot}/status',
+            [KotController::class, 'updateStatus']
+        )->name('kots.status');
+
+        Route::get(
+            'kots/{kot}/print',
+            [KotController::class, 'print']
+        )->name('kots.print');
 
     });
 
