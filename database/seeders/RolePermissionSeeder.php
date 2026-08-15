@@ -94,6 +94,16 @@ class RolePermissionSeeder extends Seeder
             // Settings
             'settings.view',
             'settings.edit',
+
+            'products.view',
+            'products.create',
+            'products.edit',
+            'products.delete',
+
+            'combos.view',
+            'combos.create',
+            'combos.edit',
+            'combos.delete',
         ];
 
         foreach ($permissions as $permission) {

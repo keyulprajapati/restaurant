@@ -6,8 +6,7 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>
         @yield('title', 'Dashboard') |
@@ -17,20 +16,15 @@
 
     <!-- Bootstrap -->
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 
     <!-- Bootstrap Icons -->
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
 
     <style>
-
         :root {
             --sidebar-width: 260px;
             --primary: #dc3545;
@@ -82,7 +76,7 @@
             padding: 0 24px;
 
             border-bottom:
-                1px solid rgba(255,255,255,.08);
+                1px solid rgba(255, 255, 255, .08);
 
         }
 
@@ -156,7 +150,7 @@
 
             color: #fff;
 
-            background: rgba(255,255,255,.07);
+            background: rgba(255, 255, 255, .07);
 
         }
 
@@ -223,7 +217,7 @@
             padding: 22px;
 
             box-shadow:
-                0 5px 20px rgba(0,0,0,.04);
+                0 5px 20px rgba(0, 0, 0, .04);
 
         }
 
@@ -269,7 +263,6 @@
             }
 
         }
-
     </style>
 
     @stack('styles')
@@ -280,417 +273,391 @@
 <body>
 
 
-<!-- Sidebar -->
+    <!-- Sidebar -->
 
-<aside
-    class="sidebar"
-    id="sidebar">
+    <aside class="sidebar" id="sidebar">
 
 
-    <!-- Brand -->
+        <!-- Brand -->
 
-    <div class="sidebar-brand">
+        <div class="sidebar-brand">
 
-        <div class="brand-logo">
+            <div class="brand-logo">
 
-            <i class="bi bi-shop"></i>
+                <i class="bi bi-shop"></i>
+
+            </div>
+
+            <div>
+
+                <div class="fw-bold">
+                    Restaurant
+                </div>
+
+
+                <small class="text-secondary">
+                    Admin Panel
+                </small>
+
+            </div>
 
         </div>
 
-        <div>
 
-            <div class="fw-bold">
+        <!-- Menu -->
+
+        <div class="sidebar-menu">
+
+
+            <div class="menu-title">
+                Main
+            </div>
+
+
+            @can('dashboard.view')
+
+                <a href="{{ route('admin.dashboard') }}" class="nav-link
+                        {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+
+                    <i class="bi bi-grid-1x2"></i>
+
+                    Dashboard
+
+                </a>
+
+            @endcan
+
+
+            @can('orders.view')
+
+                <a href="#" class="nav-link">
+
+                    <i class="bi bi-receipt"></i>
+
+                    Orders
+
+                </a>
+
+            @endcan
+
+
+            @can('pos.view')
+
+                <a href="#" class="nav-link">
+
+                    <i class="bi bi-display"></i>
+
+                    POS
+
+                </a>
+
+            @endcan
+
+
+            @can('kitchen.view')
+
+                <a href="#" class="nav-link">
+
+                    <i class="bi bi-fire"></i>
+
+                    Kitchen
+
+                </a>
+
+            @endcan
+
+
+            <div class="menu-title mt-3">
                 Restaurant
             </div>
-        
 
-            <small class="text-secondary">
-                Admin Panel
-            </small>
+            @can('categories.view')
+
+                    <a href="{{ route('admin.categories.index') }}" class="nav-link
+                        {{ request()->routeIs('admin.categories.*')
+                ? 'active'
+                : '' }}">
+
+                        <i class="bi bi-tags"></i>
+
+                        Categories
+
+                    </a>
+
+            @endcan
+
+            @can('products.view')
+
+                <a href="{{ route('admin.products.index') }}" class="nav-link
+                    {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-basket"></i>
+
+                    Menu Items
+
+                </a>
+
+            @endcan
+
+
+            @can('combos.view')
+
+                <a href="{{ route('admin.combos.index') }}" class="nav-link
+                    {{ request()->routeIs('admin.combos.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-boxes"></i>
+
+                    Combos
+
+                </a>
+
+            @endcan
+
+            @can('tables.view')
+
+                    <a href="{{ route('admin.tables.index') }}" class="nav-link
+                {{ request()->routeIs('admin.tables.*') ? 'active' : '' }}">
+
+                        <i class="bi bi-grid-3x3-gap"></i>
+
+                        Tables
+
+                    </a>
+
+            @endcan
+
+
+            @can('reservations.view')
+
+                <a href="#" class="nav-link">
+
+                    <i class="bi bi-calendar-check"></i>
+
+                    Reservations
+
+                </a>
+
+            @endcan
+
+
+            @can('customers.view')
+
+                <a href="#" class="nav-link">
+
+                    <i class="bi bi-people"></i>
+
+                    Customers
+
+                </a>
+
+            @endcan
+
+
+            <div class="menu-title mt-3">
+                Management
+            </div>
+
+
+            @can('payments.view')
+
+                <a href="#" class="nav-link">
+
+                    <i class="bi bi-credit-card"></i>
+
+                    Payments
+
+                </a>
+
+            @endcan
+
+
+            @can('reports.view')
+
+                <a href="#" class="nav-link">
+
+                    <i class="bi bi-bar-chart"></i>
+
+                    Reports
+
+                </a>
+
+            @endcan
+
+
+            @can('users.view')
+
+                <a href="{{ route('admin.users.index') }}" class="nav-link
+                        {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-person-gear"></i>
+
+                    Users
+
+                </a>
+
+            @endcan
+
+            @can('roles.view')
+
+                <a href="{{ route('admin.roles.index') }}" class="nav-link
+                        {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-shield-check"></i>
+
+                    Roles
+
+                </a>
+
+            @endcan
+
+            @can('roles.view')
+
+                <a href="{{ route('admin.permissions.index') }}" class="nav-link
+                        {{ request()->routeIs('admin.permissions.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-key"></i>
+
+                    Permissions
+
+                </a>
+
+            @endcan
+
+
+            @can('settings.view')
+
+                <a href="#" class="nav-link">
+
+                    <i class="bi bi-gear"></i>
+
+                    Settings
+
+                </a>
+
+            @endcan
 
         </div>
 
-    </div>
+    </aside>
 
 
-    <!-- Menu -->
+    <!-- Main -->
 
-    <div class="sidebar-menu">
+    <div class="main">
 
 
-        <div class="menu-title">
-            Main
-        </div>
+        <!-- Topbar -->
 
+        <header class="topbar">
 
-        @can('dashboard.view')
 
-            <a
-                href="{{ route('admin.dashboard') }}"
-                class="nav-link
-                {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+            <button class="btn btn-light d-lg-none" onclick="toggleSidebar()">
 
-                <i class="bi bi-grid-1x2"></i>
-
-                Dashboard
-
-            </a>
-
-        @endcan
-
-
-        @can('orders.view')
-
-            <a
-                href="#"
-                class="nav-link">
-
-                <i class="bi bi-receipt"></i>
-
-                Orders
-
-            </a>
-
-        @endcan
-
-
-        @can('pos.view')
-
-            <a
-                href="#"
-                class="nav-link">
-
-                <i class="bi bi-display"></i>
-
-                POS
-
-            </a>
-
-        @endcan
-
-
-        @can('kitchen.view')
-
-            <a
-                href="#"
-                class="nav-link">
-
-                <i class="bi bi-fire"></i>
-
-                Kitchen
-
-            </a>
-
-        @endcan
-
-
-        <div class="menu-title mt-3">
-            Restaurant
-        </div>
-
-@can('categories.view')
-
-    <a
-        href="{{ route('admin.categories.index') }}"
-        class="nav-link
-        {{ request()->routeIs('admin.categories.*')
-            ? 'active'
-            : '' }}">
-
-        <i class="bi bi-tags"></i>
-
-        Categories
-
-    </a>
-
-@endcan
-        @can('menu.view')
-
-            <a
-                href="#"
-                class="nav-link">
-
-                <i class="bi bi-menu-button-wide"></i>
-
-                Menu
-
-            </a>
-
-        @endcan
-
-
-        @can('tables.view')
-
-            <a
-                href="#"
-                class="nav-link">
-
-                <i class="bi bi-grid-3x3-gap"></i>
-
-                Tables
-
-            </a>
-
-        @endcan
-
-
-        @can('reservations.view')
-
-            <a
-                href="#"
-                class="nav-link">
-
-                <i class="bi bi-calendar-check"></i>
-
-                Reservations
-
-            </a>
-
-        @endcan
-
-
-        @can('customers.view')
-
-            <a
-                href="#"
-                class="nav-link">
-
-                <i class="bi bi-people"></i>
-
-                Customers
-
-            </a>
-
-        @endcan
-
-
-        <div class="menu-title mt-3">
-            Management
-        </div>
-
-
-        @can('payments.view')
-
-            <a
-                href="#"
-                class="nav-link">
-
-                <i class="bi bi-credit-card"></i>
-
-                Payments
-
-            </a>
-
-        @endcan
-
-
-        @can('reports.view')
-
-            <a
-                href="#"
-                class="nav-link">
-
-                <i class="bi bi-bar-chart"></i>
-
-                Reports
-
-            </a>
-
-        @endcan
-
-
-        @can('users.view')
-
-            <a
-                href="{{ route('admin.users.index') }}"
-                class="nav-link
-                {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-
-                <i class="bi bi-person-gear"></i>
-
-                Users
-
-            </a>
-
-        @endcan
-
-        @can('roles.view')
-
-            <a
-                href="{{ route('admin.roles.index') }}"
-                class="nav-link
-                {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
-
-                <i class="bi bi-shield-check"></i>
-
-                Roles
-
-            </a>
-
-        @endcan
-
-        @can('roles.view')
-
-            <a
-                href="{{ route('admin.permissions.index') }}"
-                class="nav-link
-                {{ request()->routeIs('admin.permissions.*') ? 'active' : '' }}">
-
-                <i class="bi bi-key"></i>
-
-                Permissions
-
-            </a>
-
-        @endcan
-
-
-        @can('settings.view')
-
-            <a
-                href="#"
-                class="nav-link">
-
-                <i class="bi bi-gear"></i>
-
-                Settings
-
-            </a>
-
-        @endcan
-
-    </div>
-
-</aside>
-
-
-<!-- Main -->
-
-<div class="main">
-
-
-    <!-- Topbar -->
-
-    <header class="topbar">
-
-
-        <button
-            class="btn btn-light d-lg-none"
-            onclick="toggleSidebar()">
-
-            <i class="bi bi-list fs-5"></i>
-
-        </button>
-
-
-        <div class="d-none d-lg-block">
-
-            <h5 class="mb-0 fw-bold">
-
-                @yield('page-title', 'Dashboard')
-
-            </h5>
-
-        </div>
-
-
-        <div class="dropdown">
-
-            <button
-                class="btn btn-light dropdown-toggle"
-                data-bs-toggle="dropdown">
-
-                <i class="bi bi-person-circle me-1"></i>
-
-                {{ auth()->user()->name }}
+                <i class="bi bi-list fs-5"></i>
 
             </button>
 
 
-            <ul class="dropdown-menu dropdown-menu-end">
+            <div class="d-none d-lg-block">
 
-                <li>
+                <h5 class="mb-0 fw-bold">
 
-                    <span class="dropdown-item-text">
+                    @yield('page-title', 'Dashboard')
 
-                        <strong>
-                            {{ auth()->user()->name }}
-                        </strong>
+                </h5>
 
-                        <br>
-
-                        <small class="text-muted">
-
-                            {{ auth()->user()->email }}
-
-                        </small>
-
-                    </span>
-
-                </li>
-
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
-
-                <li>
-
-                    <form
-                        method="POST"
-                        action="{{ route('logout') }}">
-
-                        @csrf
-
-                        <button
-                            type="submit"
-                            class="dropdown-item text-danger">
-
-                            <i class="bi bi-box-arrow-right me-2"></i>
-
-                            Logout
-
-                        </button>
-
-                    </form>
-
-                </li>
-
-            </ul>
-
-        </div>
-
-    </header>
+            </div>
 
 
-    <!-- Content -->
+            <div class="dropdown">
 
-    <main class="content">
+                <button class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
 
-        @yield('content')
+                    <i class="bi bi-person-circle me-1"></i>
 
-    </main>
+                    {{ auth()->user()->name }}
 
-</div>
-
-
-<script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
-</script>
+                </button>
 
 
-<script>
+                <ul class="dropdown-menu dropdown-menu-end">
 
-function toggleSidebar()
-{
-    document
-        .getElementById('sidebar')
-        .classList.toggle('show');
-}
+                    <li>
 
-</script>
+                        <span class="dropdown-item-text">
+
+                            <strong>
+                                {{ auth()->user()->name }}
+                            </strong>
+
+                            <br>
+
+                            <small class="text-muted">
+
+                                {{ auth()->user()->email }}
+
+                            </small>
+
+                        </span>
+
+                    </li>
+
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+
+                        <form method="POST" action="{{ route('logout') }}">
+
+                            @csrf
+
+                            <button type="submit" class="dropdown-item text-danger">
+
+                                <i class="bi bi-box-arrow-right me-2"></i>
+
+                                Logout
+
+                            </button>
+
+                        </form>
+
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </header>
 
 
-@stack('scripts')
+        <!-- Content -->
+
+        <main class="content">
+
+            @yield('content')
+
+        </main>
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+
+    <script>
+
+        function toggleSidebar() {
+            document
+                .getElementById('sidebar')
+                .classList.toggle('show');
+        }
+
+    </script>
+
+
+    @stack('scripts')
 
 </body>
 
