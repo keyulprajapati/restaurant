@@ -422,7 +422,7 @@
                                 Tax
                             </span>
 
-                            <span>
+                            <span id="taxAmount">
                                 ₹0.00
                             </span>
 
@@ -498,8 +498,13 @@ document.addEventListener(
         const discountElement =
             document.getElementById('discountAmount');
 
+        const taxElement =
+            document.getElementById('taxAmount');
+
         const grandTotalElement =
             document.getElementById('grandTotal');
+
+        const activeTaxes = @json($taxes ?? []);
 
         const discountInput =
             document.getElementById('discount');
@@ -843,18 +848,34 @@ document.addEventListener(
                     subtotal
                 );
 
+            const taxableAmount =
+                Math.max(0, subtotal - discount);
+
+            let tax = 0;
+            if (taxableAmount > 0 && Array.isArray(activeTaxes)) {
+                activeTaxes.forEach(function (rule) {
+                    const rate = parseFloat(rule.rate) || 0;
+                    if (rule.type === 'percentage') {
+                        tax += taxableAmount * (rate / 100);
+                    } else if (rule.type === 'fixed') {
+                        tax += rate;
+                    }
+                });
+            }
 
             const grandTotal =
-                subtotal - discount;
-
+                taxableAmount + tax;
 
             subtotalElement.innerText =
                 '₹' + subtotal.toFixed(2);
 
-
             discountElement.innerText =
                 '- ₹' + discount.toFixed(2);
 
+            if (taxElement) {
+                taxElement.innerText =
+                    '₹' + tax.toFixed(2);
+            }
 
             grandTotalElement.innerText =
                 '₹' + grandTotal.toFixed(2);

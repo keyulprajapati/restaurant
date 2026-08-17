@@ -475,6 +475,22 @@
 
             @endcan
 
+            @can('taxes.view')
+
+    <a
+        href="{{ route('admin.taxes.index') }}"
+        class="nav-link
+        {{ request()->routeIs('admin.taxes.*')
+            ? 'active'
+            : '' }}">
+
+        <i class="bi bi-percent"></i>
+
+        Taxes
+
+    </a>
+
+@endcan
 
             @can('reports.view')
 

@@ -110,6 +110,12 @@ class RolePermissionSeeder extends Seeder
             'combos.create',
             'combos.edit',
             'combos.delete',
+
+            // Taxes
+            'taxes.view',
+            'taxes.create',
+            'taxes.edit',
+            'taxes.delete',
         ];
 
         foreach ($permissions as $permission) {
@@ -193,6 +199,11 @@ class RolePermissionSeeder extends Seeder
 
             'reports.view',
             'reports.export',
+
+            'taxes.view',
+            'taxes.create',
+            'taxes.edit',
+            'taxes.delete',
         ]);
 
         /*

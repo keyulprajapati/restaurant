@@ -30,36 +30,67 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:100',
-            ],
+         'name' => [
+        'required',
+        'string',
+        'max:100',
+    ],
 
-            'email' => [
-                'required',
-                'email',
-                'max:100',
-                'unique:users,email',
-            ],
+    'email' => [
+        'required',
+        'email',
+        'max:100',
+        'unique:users,email',
+    ],
 
-            'password' => [
-                'required',
-                'string',
-                'min:8',
-                'confirmed',
-            ],
+    'aadhar_number' => [
+        'nullable',
+        'string',
+        'max:20',
+        'regex:/^[0-9\s-]+$/',
+    ],
 
-            'role' => [
-                'required',
-                'exists:roles,name',
-            ],
+    'pan_number' => [
+        'nullable',
+        'string',
+        'max:20',
+        'regex:/^[A-Za-z0-9]+$/',
+    ],
+
+    'address' => [
+        'nullable',
+        'string',
+        'max:1000',
+    ],
+
+    'password' => [
+        'required',
+        'string',
+        'min:8',
+        'confirmed',
+    ],
+
+    'role' => [
+        'required',
+        'exists:roles,name',
+    ],
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+    'email' => $validated['email'],
+
+    'aadhar_number' =>
+        $validated['aadhar_number'] ?? null,
+
+    'pan_number' =>
+        $validated['pan_number'] ?? null,
+
+    'address' =>
+        $validated['address'] ?? null,
+
+    'password' => Hash::make(
+        $validated['password']),
         ]);
 
         $user->assignRole($validated['role']);
@@ -91,31 +122,51 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:100',
-            ],
+       'name' => [
+        'required',
+        'string',
+        'max:100',
+    ],
 
-            'email' => [
-                'required',
-                'email',
-                'max:100',
-                Rule::unique('users', 'email')
-                    ->ignore($user->id),
-            ],
+    'email' => [
+        'required',
+        'email',
+        'max:100',
+        Rule::unique('users', 'email')
+            ->ignore($user->id),
+    ],
 
-            'password' => [
-                'nullable',
-                'string',
-                'min:8',
-                'confirmed',
-            ],
+    'aadhar_number' => [
+        'nullable',
+        'string',
+        'max:20',
+        'regex:/^[0-9\s-]+$/',
+    ],
 
-            'role' => [
-                'required',
-                'exists:roles,name',
-            ],
+    'pan_number' => [
+        'nullable',
+        'string',
+        'max:20',
+        'regex:/^[A-Za-z0-9]+$/',
+    ],
+
+    'address' => [
+        'nullable',
+        'string',
+        'max:1000',
+    ],
+
+    'password' => [
+        'nullable',
+        'string',
+        'min:8',
+        'confirmed',
+    ],
+
+    'role' => [
+        'required',
+        'exists:roles,name',
+    ],
         ]);
 
         $user->name = $validated['name'];
