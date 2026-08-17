@@ -16,9 +16,9 @@ return new class extends Migration
                 ->constrained('orders')
                 ->cascadeOnDelete();
 
-            $table->foreignId('menu_item_id')
+            $table->foreignId('product_id')
                 ->nullable()
-                ->constrained('menu_items')
+                ->constrained('products')
                 ->nullOnDelete();
 
             $table->string('item_name');
@@ -27,18 +27,20 @@ return new class extends Migration
 
             $table->decimal('unit_price', 12, 2);
 
-            $table->decimal('quantity', 10, 2)->default(1);
+            $table->decimal('quantity', 10, 2)
+                ->default(1);
 
-            $table->decimal('discount', 12, 2)->default(0);
+            $table->decimal('discount', 12, 2)
+                ->default(0);
 
-            $table->decimal('tax', 12, 2)->default(0);
+            $table->decimal('tax', 12, 2)
+                ->default(0);
 
             $table->decimal('total', 12, 2);
 
             $table->text('notes')->nullable();
 
             $table->timestamps();
-
         });
     }
 

@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\RestaurantTable;
+use App\Models\Tax;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -24,11 +25,16 @@ class PosController extends Controller
             ->orderBy('table_number')
             ->get();
 
+        $taxes = Tax::query()
+            ->where('is_active', true)
+            ->get();
+
         return view(
             'admin.pos.index',
             compact(
                 'menuItems',
-                'tables'
+                'tables',
+                'taxes'
             )
         );
     }
@@ -126,14 +132,21 @@ class PosController extends Controller
             $taxableAmount =
                 max(0, $subtotal - $discount);
 
-
-            /*
-             * Replace this with your Tax Management
-             * calculation later.
-             */
+            $activeTaxes = Tax::query()
+                ->where('is_active', true)
+                ->get();
 
             $tax = 0;
-
+            if ($taxableAmount > 0) {
+                foreach ($activeTaxes as $taxRule) {
+                    if ($taxRule->type === 'percentage') {
+                        $tax += $taxableAmount * ($taxRule->rate / 100);
+                    } elseif ($taxRule->type === 'fixed') {
+                        $tax += (float) $taxRule->rate;
+                    }
+                }
+            }
+            $tax = round($tax, 2);
 
             $grandTotal =
                 $taxableAmount + $tax;

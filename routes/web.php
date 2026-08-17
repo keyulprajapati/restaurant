@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\PosController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\KotController;
+use App\Http\Controllers\Admin\TaxController;
 
 Route::get('/', function () {
     return redirect()->route('admin.dashboard');
@@ -447,6 +448,54 @@ Route::middleware(['auth'])
             'kots/{kot}/print',
             [KotController::class, 'print']
         )->name('kots.print');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tax Management
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/taxes',
+            [TaxController::class, 'index']
+        )
+            ->middleware('permission:taxes.view')
+            ->name('taxes.index');
+
+        Route::get(
+            '/taxes/create',
+            [TaxController::class, 'create']
+        )
+            ->middleware('permission:taxes.create')
+            ->name('taxes.create');
+
+        Route::post(
+            '/taxes',
+            [TaxController::class, 'store']
+        )
+            ->middleware('permission:taxes.create')
+            ->name('taxes.store');
+
+        Route::get(
+            '/taxes/{tax}/edit',
+            [TaxController::class, 'edit']
+        )
+            ->middleware('permission:taxes.edit')
+            ->name('taxes.edit');
+
+        Route::put(
+            '/taxes/{tax}',
+            [TaxController::class, 'update']
+        )
+            ->middleware('permission:taxes.edit')
+            ->name('taxes.update');
+
+        Route::delete(
+            '/taxes/{tax}',
+            [TaxController::class, 'destroy']
+        )
+            ->middleware('permission:taxes.delete')
+            ->name('taxes.destroy');
 
     });
 

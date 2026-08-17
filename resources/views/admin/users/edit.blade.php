@@ -70,6 +70,60 @@
 
                         <div class="col-md-6">
 
+                            <label for="aadhar_number" class="form-label fw-semibold">
+                                Aadhar Number
+                            </label>
+
+                            <input type="text" id="aadhar_number" name="aadhar_number"
+                                value="{{ old('aadhar_number', $user->aadhar_number) }}" class="form-control"
+                                placeholder="Enter Aadhar number" maxlength="20" autocomplete="off">
+
+                            @error('aadhar_number')
+                                <div class="text-danger small mt-1">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label for="pan_number" class="form-label fw-semibold">
+                                PAN Number
+                            </label>
+
+                            <input type="text" id="pan_number" name="pan_number"
+                                value="{{ old('pan_number', $user->pan_number) }}"
+                                class="form-control text-uppercase" placeholder="Enter PAN number" maxlength="20"
+                                autocomplete="off">
+
+                            @error('pan_number')
+                                <div class="text-danger small mt-1">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+
+                        </div>
+
+                        <div class="col-12">
+
+                            <label for="address" class="form-label fw-semibold">
+                                Address
+                            </label>
+
+                            <textarea id="address" name="address" rows="3" maxlength="1000" class="form-control"
+                                placeholder="Enter complete address">{{ old('address', $user->address) }}</textarea>
+
+                            @error('address')
+                                <div class="text-danger small mt-1">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+
+                        </div>
+
+                        <div class="col-md-6">
+
                             <label class="form-label fw-semibold">
                                 New Password
                             </label>
@@ -82,6 +136,12 @@
                             <small class="text-muted">
                                 Leave blank to keep current password.
                             </small>
+
+                            @error('password')
+                                <div class="text-danger small mt-1">
+                                    {{ $message }}
+                                </div>
+                            @enderror
 
                         </div>
 
@@ -124,6 +184,12 @@
                                 @endforeach
 
                             </select>
+
+                            @error('role')
+                                <div class="text-danger small mt-1">
+                                    {{ $message }}
+                                </div>
+                            @enderror
 
                         </div>
 
