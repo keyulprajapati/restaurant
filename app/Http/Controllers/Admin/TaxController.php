@@ -83,187 +83,137 @@ class TaxController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:100',
-            ],
-
-            'code' => [
-                'required',
-                'string',
-                'max:50',
-                'alpha_dash',
-                'unique:taxes,code',
-            ],
-
-            'type' => [
-                'required',
-                Rule::in([
-                    'percentage',
-                    'fixed',
-                ]),
-            ],
-
-            'rate' => [
-                'required',
-                'numeric',
-                'min:0',
-                'max:99999999.99',
-            ],
-
-            'applies_to' => [
-                'required',
-                Rule::in([
-                    'all',
-                    'food',
-                    'beverage',
-                    'service',
-                ]),
-            ],
-
-            'description' => [
-                'nullable',
-                'string',
-                'max:500',
-            ],
-
-            'is_active' => [
-                'nullable',
-                'boolean',
-            ],
+            'name' => ['required', 'string', 'max:100'],
+            'code' => ['required', 'string', 'max:50', 'alpha_dash', 'unique:taxes,code'],
+            'type' => ['required', 'in:percentage,fixed'],
+            'rate' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
+            'cgst_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'sgst_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'igst_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'applies_to' => ['required', 'in:all,food,beverage,service'],
+            'description' => ['nullable', 'string', 'max:500'],
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Percentage Validation
-        |--------------------------------------------------------------------------
-        */
+        $rate = (float) $validated['rate'];
 
-        if (
-            $validated['type'] === 'percentage'
-            && $validated['rate'] > 100
-        ) {
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'rate' =>
-                        'Percentage tax rate cannot exceed 100.',
-                ]);
+        if ($validated['type'] === 'percentage') {
+            $hasCgst = isset($validated['cgst_rate']) && $validated['cgst_rate'] !== '';
+            $hasSgst = isset($validated['sgst_rate']) && $validated['sgst_rate'] !== '';
+            $hasIgst = isset($validated['igst_rate']) && $validated['igst_rate'] !== '';
+
+            if (!$hasCgst && !$hasSgst) {
+                $validated['cgst_rate'] = round($rate / 2, 2);
+                $validated['sgst_rate'] = round($rate / 2, 2);
+            } else {
+                $cgst = (float) ($validated['cgst_rate'] ?? 0);
+                $sgst = (float) ($validated['sgst_rate'] ?? 0);
+
+                if (round($cgst + $sgst, 2) !== round($rate, 2)) {
+                    return back()
+                        ->withInput()
+                        ->withErrors([
+                            'cgst_rate' => 'CGST + SGST (' . ($cgst + $sgst) . '%) must equal the total GST rate (' . $rate . '%).',
+                        ]);
+                }
+            }
+
+            if (!$hasIgst) {
+                $validated['igst_rate'] = round($rate, 2);
+            } else {
+                $igst = (float) $validated['igst_rate'];
+                if (round($igst, 2) !== round($rate, 2)) {
+                    return back()
+                        ->withInput()
+                        ->withErrors([
+                            'igst_rate' => 'IGST (' . $igst . '%) must equal the total GST rate (' . $rate . '%).',
+                        ]);
+                }
+            }
+        } else {
+            $validated['cgst_rate'] = null;
+            $validated['sgst_rate'] = null;
+            $validated['igst_rate'] = null;
         }
 
-        $validated['code'] = strtoupper(
-            $validated['code']
-        );
-
-        $validated['is_active'] =
-            $request->boolean('is_active');
+        $validated['code'] = strtoupper($validated['code']);
+        $validated['is_active'] = $request->boolean('is_active');
 
         Tax::create($validated);
 
         return redirect()
             ->route('admin.taxes.index')
-            ->with(
-                'success',
-                'Tax created successfully.'
-            );
+            ->with('success', 'Tax created successfully.');
     }
 
     public function edit(Tax $tax)
     {
-        return view(
-            'admin.taxes.edit',
-            compact('tax')
-        );
+        return view('admin.taxes.edit', compact('tax'));
     }
 
-    public function update(
-        Request $request,
-        Tax $tax
-    ) {
+    public function update(Request $request, Tax $tax)
+    {
         $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:100',
-            ],
-
-            'code' => [
-                'required',
-                'string',
-                'max:50',
-                'alpha_dash',
-
-                Rule::unique(
-                    'taxes',
-                    'code'
-                )->ignore($tax->id),
-            ],
-
-            'type' => [
-                'required',
-                Rule::in([
-                    'percentage',
-                    'fixed',
-                ]),
-            ],
-
-            'rate' => [
-                'required',
-                'numeric',
-                'min:0',
-                'max:99999999.99',
-            ],
-
-            'applies_to' => [
-                'required',
-                Rule::in([
-                    'all',
-                    'food',
-                    'beverage',
-                    'service',
-                ]),
-            ],
-
-            'description' => [
-                'nullable',
-                'string',
-                'max:500',
-            ],
-
-            'is_active' => [
-                'nullable',
-                'boolean',
-            ],
+            'name' => ['required', 'string', 'max:100'],
+            'code' => ['required', 'string', 'max:50', 'alpha_dash', Rule::unique('taxes', 'code')->ignore($tax->id)],
+            'type' => ['required', 'in:percentage,fixed'],
+            'rate' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
+            'cgst_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'sgst_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'igst_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'applies_to' => ['required', 'in:all,food,beverage,service'],
+            'description' => ['nullable', 'string', 'max:500'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
 
-        if (
-            $validated['type'] === 'percentage'
-            && $validated['rate'] > 100
-        ) {
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'rate' =>
-                        'Percentage tax rate cannot exceed 100.',
-                ]);
+        $rate = (float) $validated['rate'];
+
+        if ($validated['type'] === 'percentage') {
+            $hasCgst = isset($validated['cgst_rate']) && $validated['cgst_rate'] !== '';
+            $hasSgst = isset($validated['sgst_rate']) && $validated['sgst_rate'] !== '';
+            $hasIgst = isset($validated['igst_rate']) && $validated['igst_rate'] !== '';
+
+            if (!$hasCgst && !$hasSgst) {
+                $validated['cgst_rate'] = round($rate / 2, 2);
+                $validated['sgst_rate'] = round($rate / 2, 2);
+            } else {
+                $cgst = (float) ($validated['cgst_rate'] ?? 0);
+                $sgst = (float) ($validated['sgst_rate'] ?? 0);
+
+                if (round($cgst + $sgst, 2) !== round($rate, 2)) {
+                    return back()
+                        ->withInput()
+                        ->withErrors([
+                            'cgst_rate' => 'CGST + SGST (' . ($cgst + $sgst) . '%) must equal the total GST rate (' . $rate . '%).',
+                        ]);
+                }
+            }
+
+            if (!$hasIgst) {
+                $validated['igst_rate'] = round($rate, 2);
+            } else {
+                $igst = (float) $validated['igst_rate'];
+                if (round($igst, 2) !== round($rate, 2)) {
+                    return back()
+                        ->withInput()
+                        ->withErrors([
+                            'igst_rate' => 'IGST (' . $igst . '%) must equal the total GST rate (' . $rate . '%).',
+                        ]);
+                }
+            }
+        } else {
+            $validated['cgst_rate'] = null;
+            $validated['sgst_rate'] = null;
+            $validated['igst_rate'] = null;
         }
 
-        $validated['code'] = strtoupper(
-            $validated['code']
-        );
-
-        $validated['is_active'] =
-            $request->boolean('is_active');
+        $validated['code'] = strtoupper($validated['code']);
+        $validated['is_active'] = $request->boolean('is_active');
 
         $tax->update($validated);
 
         return redirect()
             ->route('admin.taxes.index')
-            ->with(
-                'success',
-                'Tax updated successfully.'
-            );
+            ->with('success', 'Tax updated successfully.');
     }
 
     public function destroy(Tax $tax)
