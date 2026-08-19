@@ -23,27 +23,95 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;600;700&family=Outfit:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
     <!-- Bootstrap Icons -->
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-
 
     <style>
         :root {
+            --primary-color: {{ setting('theme_primary_color', '#23422A') }};
+            --secondary-color: {{ setting('theme_secondary_color', '#C69A39') }};
+            --bg-color: {{ setting('theme_background_color', '#F9F6EE') }};
+            --sidebar-color: {{ setting('theme_sidebar_color', '#111F15') }};
+            --font-color: {{ setting('theme_font_color', '#1C2E20') }};
+            --font-family: '{{ setting('theme_font_family', 'Outfit') }}', Inter, system-ui, sans-serif;
             --sidebar-width: 260px;
-            --primary: #dc3545;
-            --sidebar: #111827;
+            --primary: var(--primary-color);
+            --sidebar: var(--sidebar-color);
         }
 
         body {
-            background: #f5f7fb;
-            font-family:
-                Inter,
-                system-ui,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
+            background-color: var(--bg-color) !important;
+            color: var(--font-color) !important;
+            font-family: var(--font-family) !important;
+        }
+
+        .sidebar {
+            background: var(--sidebar-color) !important;
+        }
+
+        .sidebar-brand .brand-logo {
+            background: var(--primary-color) !important;
+        }
+
+        .sidebar .nav-link.active,
+        .sidebar .nav-link:hover {
+            background: var(--primary-color) !important;
+            color: #ffffff !important;
+        }
+
+        .btn-danger,
+        .bg-danger,
+        .badge.bg-danger,
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        .btn-outline-danger {
+            color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+        .btn-outline-danger:hover {
+            background-color: var(--primary-color) !important;
+            color: #ffffff !important;
+        }
+
+        .bg-danger-subtle {
+            background-color: rgba(35, 66, 42, 0.12) !important;
+            color: var(--primary-color) !important;
+        }
+
+        .text-danger {
+            color: var(--primary-color) !important;
+        }
+
+        .btn-warning,
+        .bg-warning,
+        .badge.bg-warning {
+            background-color: var(--secondary-color) !important;
+            border-color: var(--secondary-color) !important;
+            color: #ffffff !important;
+        }
+
+        .btn-outline-warning {
+            color: var(--secondary-color) !important;
+            border-color: var(--secondary-color) !important;
+        }
+
+        .bg-warning-subtle,
+        .bg-secondary-subtle {
+            background-color: rgba(198, 154, 57, 0.18) !important;
+            color: var(--secondary-color) !important;
+        }
+
+        .text-warning,
+        .text-secondary {
+            color: var(--secondary-color) !important;
         }
 
         /* Sidebar */

@@ -522,6 +522,20 @@ Route::middleware(['auth'])
             ->middleware('permission:settings.edit')
             ->name('settings.general.update');
 
+        Route::get(
+            '/settings/theme',
+            [SettingController::class, 'theme']
+        )
+            ->middleware('permission:settings.view')
+            ->name('settings.theme');
+
+        Route::post(
+            '/settings/theme',
+            [SettingController::class, 'updateTheme']
+        )
+            ->middleware('permission:settings.edit')
+            ->name('settings.theme.update');
+
     });
 
 require __DIR__ . '/auth.php';

@@ -46,6 +46,10 @@
                         <i class="bi bi-sliders fs-5"></i>
                         <span class="fw-semibold">General Settings</span>
                     </a>
+                    <a class="nav-link text-dark d-flex align-items-center gap-2 py-2 px-3 rounded-3" href="{{ route('admin.settings.theme') }}">
+                        <i class="bi bi-palette fs-5"></i>
+                        <span class="fw-semibold">Theme Settings</span>
+                    </a>
                 </div>
             </div>
             <div class="card-footer bg-light border-0 p-3 rounded-bottom-4">

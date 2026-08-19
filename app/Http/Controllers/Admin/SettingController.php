@@ -66,6 +66,49 @@ class SettingController extends Controller
     }
 
     /**
+     * Display the theme settings form.
+     */
+    public function theme()
+    {
+        $theme = [
+            'primary_color' => Setting::get('theme_primary_color', '#23422A'),
+            'secondary_color' => Setting::get('theme_secondary_color', '#C69A39'),
+            'background_color' => Setting::get('theme_background_color', '#F9F6EE'),
+            'sidebar_color' => Setting::get('theme_sidebar_color', '#111F15'),
+            'font_color' => Setting::get('theme_font_color', '#1C2E20'),
+            'font_family' => Setting::get('theme_font_family', 'Outfit'),
+        ];
+
+        return view('admin.settings.theme', compact('theme'));
+    }
+
+    /**
+     * Update the theme settings.
+     */
+    public function updateTheme(Request $request)
+    {
+        $validated = $request->validate([
+            'primary_color' => ['required', 'string', 'regex:/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/'],
+            'secondary_color' => ['required', 'string', 'regex:/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/'],
+            'background_color' => ['required', 'string', 'regex:/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/'],
+            'sidebar_color' => ['required', 'string', 'regex:/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/'],
+            'font_color' => ['required', 'string', 'regex:/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/'],
+            'font_family' => ['required', 'string', 'max:100'],
+        ]);
+
+        Setting::set('theme_primary_color', $validated['primary_color'], 'theme');
+        Setting::set('theme_secondary_color', $validated['secondary_color'], 'theme');
+        Setting::set('theme_background_color', $validated['background_color'], 'theme');
+        Setting::set('theme_sidebar_color', $validated['sidebar_color'], 'theme');
+        Setting::set('theme_font_color', $validated['font_color'], 'theme');
+        Setting::set('theme_font_family', $validated['font_family'], 'theme');
+
+        return redirect()
+            ->route('admin.settings.theme')
+            ->with('success', 'Theme settings updated successfully.');
+    }
+
+    /**
      * Helper to delete old setting file from public disk.
      */
     protected function deleteOldFile(string $key): void
