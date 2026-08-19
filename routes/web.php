@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\PosController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\KotController;
 use App\Http\Controllers\Admin\TaxController;
+use App\Http\Controllers\Admin\SettingController;
 
 Route::get('/', function () {
     return redirect()->route('admin.dashboard');
@@ -496,6 +497,30 @@ Route::middleware(['auth'])
         )
             ->middleware('permission:taxes.delete')
             ->name('taxes.destroy');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Settings Management
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/settings', function () {
+            return redirect()->route('admin.settings.general');
+        })->name('settings.index');
+
+        Route::get(
+            '/settings/general',
+            [SettingController::class, 'index']
+        )
+            ->middleware('permission:settings.view')
+            ->name('settings.general');
+
+        Route::post(
+            '/settings/general',
+            [SettingController::class, 'updateGeneral']
+        )
+            ->middleware('permission:settings.edit')
+            ->name('settings.general.update');
 
     });
 

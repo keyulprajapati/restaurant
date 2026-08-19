@@ -10,9 +10,13 @@
 
     <title>
         @yield('title', 'Dashboard') |
-        Restaurant Admin
+        {{ setting('site_name', 'Restaurant Admin') }}
     </title>
 
+    @if(setting('favicon_icon'))
+        <link rel="icon" href="{{ asset(setting('favicon_icon')) }}">
+        <link rel="shortcut icon" href="{{ asset(setting('favicon_icon')) }}">
+    @endif
 
     <!-- Bootstrap -->
 
@@ -282,16 +286,20 @@
 
         <div class="sidebar-brand">
 
-            <div class="brand-logo">
+            <div class="brand-logo overflow-hidden">
 
-                <i class="bi bi-shop"></i>
+                @if(setting('brand_logo'))
+                    <img src="{{ asset(setting('brand_logo')) }}" alt="Logo" class="w-100 h-100" style="object-fit: cover;">
+                @else
+                    <i class="bi bi-shop"></i>
+                @endif
 
             </div>
 
             <div>
 
-                <div class="fw-bold">
-                    Restaurant
+                <div class="fw-bold text-truncate" style="max-width: 150px;">
+                    {{ setting('site_name', 'Restaurant') }}
                 </div>
 
 
@@ -547,7 +555,8 @@
 
             @can('settings.view')
 
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.settings.general') }}" class="nav-link
+                                {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
 
                     <i class="bi bi-gear"></i>
 
@@ -581,7 +590,11 @@
 
             <div class="d-none d-lg-block">
 
-                <h5 class="mb-0 fw-bold">
+                <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+
+                    @if(setting('site_icon'))
+                        <img src="{{ asset(setting('site_icon')) }}" alt="Site Icon" style="width: 26px; height: 26px; object-fit: contain;">
+                    @endif
 
                     @yield('page-title', 'Dashboard')
 
