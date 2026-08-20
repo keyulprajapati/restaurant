@@ -154,6 +154,21 @@
                                 <div class="fw-bold text-dark">
                                     @if($tax->type === 'percentage')
                                         {{ number_format($tax->rate, 2) }}%
+                                        @if(!is_null($tax->cgst_rate) && !is_null($tax->sgst_rate))
+                                            <div class="mt-1 d-flex flex-wrap gap-1">
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace" style="font-size: 0.725rem;" title="Central GST">
+                                                    CGST: {{ number_format($tax->cgst_rate, 2) }}%
+                                                </span>
+                                                <span class="badge bg-info-subtle text-info border border-info-subtle font-monospace" style="font-size: 0.725rem;" title="State GST">
+                                                    SGST: {{ number_format($tax->sgst_rate, 2) }}%
+                                                </span>
+                                                @if(!is_null($tax->igst_rate))
+                                                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle font-monospace" style="font-size: 0.725rem;" title="Integrated GST">
+                                                        IGST: {{ number_format($tax->igst_rate, 2) }}%
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        @endif
                                     @else
                                         ₹{{ number_format($tax->rate, 2) }}
                                     @endif

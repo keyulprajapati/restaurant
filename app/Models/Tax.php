@@ -11,6 +11,9 @@ class Tax extends Model
         'code',
         'type',
         'rate',
+        'cgst_rate',
+        'sgst_rate',
+        'igst_rate',
         'applies_to',
         'description',
         'is_active',
@@ -20,6 +23,9 @@ class Tax extends Model
     {
         return [
             'rate' => 'decimal:2',
+            'cgst_rate' => 'decimal:2',
+            'sgst_rate' => 'decimal:2',
+            'igst_rate' => 'decimal:2',
             'is_active' => 'boolean',
         ];
     }
