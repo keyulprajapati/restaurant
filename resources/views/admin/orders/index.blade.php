@@ -80,7 +80,6 @@
 
             </div>
 
-
             <div class="col-md-3">
 
                 <select
@@ -96,7 +95,7 @@
                         @selected(
                             request('order_type') === 'dine_in'
                         )>
-                        Dine In
+                        Dine In (Table)
                     </option>
 
                     <option
@@ -120,13 +119,42 @@
             </div>
 
 
-            <div class="col-md-2">
+            <div class="col-md-3">
 
-                <button class="btn btn-dark w-100">
+                <select
+                    name="restaurant_table_id"
+                    class="form-select">
 
-                    Filter
+                    <option value="">
+                        All Tables
+                    </option>
 
+                    @foreach($tables as $tbl)
+
+                        <option
+                            value="{{ $tbl->id }}"
+                            @selected(
+                                request('restaurant_table_id') == $tbl->id
+                            )>
+                            Table {{ $tbl->table_number }} {{ $tbl->area ? '('.$tbl->area.')' : '' }}
+                        </option>
+
+                    @endforeach
+
+                </select>
+
+            </div>
+
+
+            <div class="col-md-3 d-flex gap-2">
+
+                <button class="btn btn-dark flex-fill">
+                    <i class="bi bi-search me-1"></i> Filter
                 </button>
+
+                <a href="{{ route('admin.orders.index') }}" class="btn btn-light">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
 
             </div>
 

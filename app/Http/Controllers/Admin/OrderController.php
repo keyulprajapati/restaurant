@@ -35,14 +35,25 @@ class OrderController extends Controller
             );
         }
 
+        if ($request->filled('restaurant_table_id')) {
+            $query->where(
+                'restaurant_table_id',
+                $request->restaurant_table_id
+            );
+        }
+
         $orders = $query
             ->latest()
             ->paginate(20)
             ->withQueryString();
 
+        $tables = RestaurantTable::query()
+            ->orderBy('table_number')
+            ->get();
+
         return view(
             'admin.orders.index',
-            compact('orders')
+            compact('orders', 'tables')
         );
     }
 

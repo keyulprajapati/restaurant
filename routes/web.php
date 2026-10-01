@@ -16,10 +16,21 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\KotController;
 use App\Http\Controllers\Admin\TaxController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\TableOrderController;
 
 Route::get('/', function () {
     return redirect()->route('admin.dashboard');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Public Customer Table Ordering (QR Scan)
+|--------------------------------------------------------------------------
+*/
+Route::get('/table/{table}', [TableOrderController::class, 'showMenu'])->name('table.menu');
+Route::post('/table/{table}/order', [TableOrderController::class, 'placeOrder'])->name('table.order.store');
+Route::get('/table/order/{order_number}', [TableOrderController::class, 'trackOrder'])->name('table.order.track');
+Route::get('/table/order/{order_number}/status', [TableOrderController::class, 'orderStatusApi'])->name('table.order.status');
 
 
 Route::middleware(['auth'])
@@ -301,6 +312,48 @@ Route::middleware(['auth'])
         )
             ->middleware('permission:tables.create')
             ->name('tables.store');
+
+        Route::get(
+            '/tables/extra',
+            [RestaurantTableController::class, 'createExtra']
+        )
+            ->middleware('permission:tables.create')
+            ->name('tables.extra');
+
+        Route::post(
+            '/tables/extra',
+            [RestaurantTableController::class, 'storeExtra']
+        )
+            ->middleware('permission:tables.create')
+            ->name('tables.extra.store');
+
+        Route::get(
+            '/tables/print-all-qr',
+            [RestaurantTableController::class, 'printAllQr']
+        )
+            ->middleware('permission:tables.view')
+            ->name('tables.print-all-qr');
+
+        Route::get(
+            '/tables/{table}/print-qr',
+            [RestaurantTableController::class, 'printQr']
+        )
+            ->middleware('permission:tables.view')
+            ->name('tables.print-qr');
+
+        Route::get(
+            '/tables/{table}/qrcode',
+            [RestaurantTableController::class, 'qrCode']
+        )
+            ->middleware('permission:tables.view')
+            ->name('tables.qrcode');
+
+        Route::post(
+            '/tables/save-qr-base',
+            [RestaurantTableController::class, 'saveQrBaseUrl']
+        )
+            ->middleware('permission:tables.create')
+            ->name('tables.save-qr-base');
 
         Route::get(
             '/tables/{table}/edit',

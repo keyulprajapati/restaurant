@@ -93,6 +93,23 @@
                             @error('site_name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        <div class="col-md-12">
+                            <label for="qr_base_url" class="form-label fw-semibold">
+                                Table QR Code Base URL (Mobile Network Address)
+                            </label>
+                            <input type="text"
+                                   id="qr_base_url"
+                                   name="qr_base_url"
+                                   value="{{ old('qr_base_url', $settings['qr_base_url']) }}"
+                                   class="form-control @error('qr_base_url') is-invalid @enderror"
+                                   placeholder="e.g. http://192.168.31.60/restaurant/public or https://yourdomain.com">
+                            <div class="form-text">
+                                <i class="bi bi-phone me-1 text-primary"></i>
+                                When customers scan table QR codes on their mobile phones, this base URL is used. For local Wi-Fi, use your local Wi-Fi IP (<code>http://{{ gethostbyname(gethostname()) }}/restaurant/public</code>). For production, enter your live domain.
+                            </div>
+                            @error('qr_base_url')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>
