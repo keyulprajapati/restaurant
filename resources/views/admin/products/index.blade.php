@@ -112,7 +112,7 @@
 
                         <td class="fw-semibold">
 
-                            ₹{{ number_format($product->price, 2) }}
+                            ₹{{ number_format((float) $product->price, 0) }}
 
                         </td>
 

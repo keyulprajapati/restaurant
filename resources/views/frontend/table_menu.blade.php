@@ -568,7 +568,7 @@
                         <div style="font-weight: 700; font-size: 13px; color: #16a34a;">
                             &#10004; Running Order: #{{ $activeOrder->order_number }}
                         </div>
-                        <div style="font-size: 12px; color: #6b7280;">Status: {{ ucfirst($activeOrder->status) }} &bull; &#8377;{{ number_format($activeOrder->grand_total, 2) }}</div>
+                        <div style="font-size: 12px; color: #6b7280;">Status: {{ ucfirst($activeOrder->status) }} &bull; &#8377;{{ number_format((float) $activeOrder->grand_total, 0) }}</div>
                     </div>
                     <a href="{{ route('table.order.track', $activeOrder->order_number) }}" style="background: var(--primary); color: #fff; text-decoration: none; padding: 4px 12px; border-radius: 50px; font-size: 12px; font-weight: 600;">
                         View
@@ -629,7 +629,7 @@
                                     <span>{{ $ci->product?->name }} (x{{ (int) $ci->quantity }})</span>
                                 @endforeach
                             </div>
-                            <div class="dish-price">&#8377;{{ number_format($combo->price, 2) }}</div>
+                            <div class="dish-price">&#8377;{{ number_format((float) $combo->price, 0) }}</div>
                         </div>
 
                         <div id="action-wrapper-combo-{{ $combo->id }}">
@@ -667,7 +667,7 @@
                             @endif
                             <span style="text-transform: capitalize;">{{ $product->food_type }}</span>
                         </div>
-                        <div class="dish-price">&#8377;{{ number_format($product->price, 2) }}</div>
+                        <div class="dish-price">&#8377;{{ number_format((float) $product->price, 0) }}</div>
                     </div>
 
                     <div id="action-wrapper-product-{{ $product->id }}">

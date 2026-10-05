@@ -73,6 +73,20 @@ class OrderController extends Controller
         );
     }
 
+    public function receipt(Order $order)
+    {
+        $order->load([
+            'customer',
+            'table',
+            'items',
+        ]);
+
+        return view(
+            'admin.orders.receipt',
+            compact('order')
+        );
+    }
+
 
     public function updateStatus(
         Request $request,

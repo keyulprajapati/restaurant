@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Combo;
 use App\Models\Customer;
+use App\Models\Kot;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\RestaurantTable;
@@ -142,6 +143,7 @@ class TableOrderController extends Controller
                         'menu_item_id' => $product->id,
                         'item_name' => $product->name,
                         'size' => $product->size ? $product->formatted_size : null,
+                        'unit' => $product->unit,
                         'unit_price' => $price,
                         'quantity' => $qty,
                         'discount' => 0,
@@ -190,6 +192,56 @@ class TableOrderController extends Controller
             foreach ($itemsData as $item) {
                 $order->items()->create($item);
             }
+
+            $order->load('items');
+
+            $kot = Kot::create([
+                'kot_number' => $this->generateKotNumber(),
+                'order_id' => $order->id,
+                'restaurant_table_id' => $order->restaurant_table_id,
+                'status' => 'pending',
+                'notes' => $notes,
+                'sent_at' => now(),
+            ]);
+
+            foreach ($order->items as $orderItem) {
+                $kot->items()->create([
+                    'order_item_id' => $orderItem->id,
+                    'item_name' => $orderItem->item_name,
+                    'size' => $orderItem->size,
+                    'unit' => $orderItem->unit,
+                    'quantity' => $orderItem->quantity,
+                    'notes' => null,
+                    'status' => 'pending',
+                ]);
+
+                if ($orderItem->item_name && str_contains($orderItem->item_name, ' (Combo)')) {
+                    $comboName = str_replace(' (Combo)', '', $orderItem->item_name);
+                    $combo = Combo::query()->where('name', $comboName)->with('items.product')->first();
+
+                    if ($combo) {
+                        foreach ($combo->items as $comboItem) {
+                            $product = $comboItem->product;
+
+                            if (!$product) {
+                                continue;
+                            }
+
+                            $kot->items()->create([
+                                'order_item_id' => $orderItem->id,
+                                'item_name' => $product->name,
+                                'size' => $product->size,
+                                'unit' => $product->unit,
+                                'quantity' => (float) $orderItem->quantity * (float) $comboItem->quantity,
+                                'notes' => 'Combo: ' . $combo->name,
+                                'status' => 'pending',
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            $order->update(['status' => 'preparing']);
 
             // Mark table occupied
             $table->update(['status' => 'occupied']);
@@ -272,6 +324,15 @@ class TableOrderController extends Controller
         do {
             $number = 'ORD-' . now()->format('Ymd') . '-' . strtoupper(substr(uniqid(), -5));
         } while (Order::where('order_number', $number)->exists());
+
+        return $number;
+    }
+
+    private function generateKotNumber(): string
+    {
+        do {
+            $number = 'KOT-' . now()->format('Ymd') . '-' . strtoupper(substr(uniqid(), -5));
+        } while (Kot::where('kot_number', $number)->exists());
 
         return $number;
     }

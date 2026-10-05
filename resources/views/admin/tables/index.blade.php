@@ -235,14 +235,6 @@
 
                         <td class="text-end">
                             <div class="d-inline-flex gap-1">
-                                {{-- QR Code Modal Trigger --}}
-                                <button type="button"
-                                        class="btn btn-sm btn-outline-dark"
-                                        onclick="openQrModal('{{ $table->id }}', '{{ $table->table_number }}', '{{ $table->area ?: 'Dining Area' }}', '{{ $table->url }}')"
-                                        title="View Table QR Code">
-                                    <i class="bi bi-qr-code me-1"></i> QR
-                                </button>
-
                                 {{-- Direct Print QR --}}
                                 <a href="{{ route('admin.tables.print-qr', $table) }}"
                                    target="_blank"

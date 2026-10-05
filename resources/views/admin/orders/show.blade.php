@@ -91,7 +91,13 @@
 
                                             <small class="text-muted">
 
-                                                {{ $item->size }}
+                                                {{ $item->size
+                                                    ? rtrim(rtrim(number_format((float) $item->size, 3, '.', ''), '0'), '.')
+                                                    : '' }}
+
+                                                {{ $item->unit
+                                                    ? ' - ' . $item->unit
+                                                    : '' }}
 
                                             </small>
 
@@ -101,8 +107,8 @@
 
                                     <td>
                                         ₹{{ number_format(
-                                            $item->unit_price,
-                                            2
+                                            (float) $item->unit_price,
+                                            0
                                         ) }}
                                     </td>
 
@@ -113,8 +119,8 @@
                                     <td class="text-end fw-semibold">
 
                                         ₹{{ number_format(
-                                            $item->total,
-                                            2
+                                            (float) $item->total,
+                                            0
                                         ) }}
 
                                     </td>
@@ -138,8 +144,8 @@
 
                         <strong>
                             ₹{{ number_format(
-                                $order->subtotal,
-                                2
+                                (float) $order->subtotal,
+                                0
                             ) }}
                         </strong>
 
@@ -152,8 +158,8 @@
 
                         <strong>
                             ₹{{ number_format(
-                                $order->discount,
-                                2
+                                (float) $order->discount,
+                                0
                             ) }}
                         </strong>
 
@@ -166,8 +172,8 @@
 
                         <strong>
                             ₹{{ number_format(
-                                $order->tax,
-                                2
+                                (float) $order->tax,
+                                0
                             ) }}
                         </strong>
 
@@ -185,8 +191,8 @@
                         <span class="text-danger">
 
                             ₹{{ number_format(
-                                $order->grand_total,
-                                2
+                                (float) $order->grand_total,
+                                0
                             ) }}
 
                         </span>
@@ -266,6 +272,18 @@
 
                 </div>
 
+
+                <div class="d-grid gap-2 mb-3">
+
+                    <a
+                        href="{{ route('admin.orders.receipt', $order) }}"
+                        target="_blank"
+                        class="btn btn-outline-dark">
+                        <i class="bi bi-receipt me-2"></i>
+                        Print Invoice
+                    </a>
+
+                </div>
 
                 <form
                     method="POST"

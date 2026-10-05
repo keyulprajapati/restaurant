@@ -199,7 +199,7 @@
 
                             {{ $product->name }}
                             -
-                            ₹{{ number_format($product->price, 2) }}
+                            ₹{{ number_format((float) $product->price, 0) }}
 
                         </option>
 
