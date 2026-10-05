@@ -14,11 +14,15 @@ class SettingController extends Controller
      */
     public function index()
     {
+        $defaultHost = gethostbyname(gethostname());
+        $defaultBase = 'http://' . $defaultHost . '/restaurant/public';
+
         $settings = [
             'site_name' => Setting::get('site_name', 'Restaurant System'),
             'brand_logo' => Setting::get('brand_logo'),
             'favicon_icon' => Setting::get('favicon_icon'),
             'site_icon' => Setting::get('site_icon'),
+            'qr_base_url' => Setting::get('qr_base_url', $defaultBase),
         ];
 
         return view('admin.settings.general', compact('settings'));
@@ -31,13 +35,17 @@ class SettingController extends Controller
     {
         $validated = $request->validate([
             'site_name' => ['required', 'string', 'max:255'],
+            'qr_base_url' => ['nullable', 'string', 'max:255'],
             'brand_logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:2048'],
             'favicon_icon' => ['nullable', 'file', 'mimes:ico,png,jpg,jpeg,svg', 'max:1024'],
             'site_icon' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:2048'],
         ]);
 
-        // Save site_name
+        // Save site_name & qr_base_url
         Setting::set('site_name', $validated['site_name']);
+        if ($request->filled('qr_base_url')) {
+            Setting::set('qr_base_url', rtrim($validated['qr_base_url'], '/'));
+        }
 
         // Handle Brand Logo Upload
         if ($request->hasFile('brand_logo')) {
