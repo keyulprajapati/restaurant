@@ -65,7 +65,8 @@
                                 <select
                                     name="order_type"
                                     id="order_type"
-                                    class="form-select">
+                                    class="form-select"
+                                    required>
 
                                     <option value="dine_in">
                                         Dine In
@@ -94,10 +95,12 @@
 
                                 <select
                                     name="customer_id"
-                                    class="form-select">
+                                    id="customer_id"
+                                    class="form-select"
+                                    required>
 
-                                    <option value="">
-                                        Walk-in Customer
+                                    <option value="walk_in">
+                                        Walk-In Customer
                                     </option>
 
                                     @foreach(
@@ -136,7 +139,8 @@
                                 <select
                                     name="restaurant_table_id"
                                     id="table_id"
-                                    class="form-select">
+                                    class="form-select"
+                                    required>
 
                                     <option value="">
                                         Select Table
@@ -216,7 +220,9 @@
                                 data-id="{{ $item->id }}"
                                 data-name="{{ $item->name }}"
                                 data-size="{{ $item->size }}"
-                                data-price="{{ $item->price }}">
+                                data-unit="{{ $item->unit }}"
+                                data-price="{{ $item->price }}"
+                                data-type="product">
 
                                 <div class="card-body">
 
@@ -241,7 +247,8 @@
 
                                         <small class="text-muted">
 
-                                            {{ $item->size }}
+                                            {{ rtrim(rtrim(number_format((float) $item->size, 3, '.', ''), '0'), '.') }}
+                                            {{ $item->unit ? ' - ' . $item->unit : '' }}
 
                                         </small>
 
@@ -250,7 +257,65 @@
                                     <div class="fw-bold mt-2">
 
                                         ₹{{ number_format(
-                                            $item->price,
+                                            (float) $item->price,
+                                            2
+                                        ) }}
+
+                                    </div>
+
+                                </div>
+
+                            </button>
+
+                        </div>
+
+                    @endforeach
+
+                    @foreach($combos as $combo)
+
+                        <div
+                            class="col-6 col-md-4 col-lg-3 menu-product"
+                            data-name="{{ strtolower($combo->name) }}">
+
+                            <button
+                                type="button"
+                                class="card border-0 shadow-sm rounded-4
+                                       w-100 text-start h-100
+                                       product-button"
+                                data-id="{{ $combo->id }}"
+                                data-name="{{ $combo->name }}"
+                                data-size=""
+                                data-unit="combo"
+                                data-price="{{ $combo->price }}"
+                                data-type="combo">
+
+                                <div class="card-body">
+
+                                    <div
+                                        class="rounded-3 bg-warning-subtle
+                                               text-warning
+                                               d-flex align-items-center
+                                               justify-content-center mb-3"
+                                        style="height:70px;">
+
+                                        <i class="bi bi-basket3 fs-2"></i>
+
+                                    </div>
+
+                                    <div class="fw-semibold">
+
+                                        {{ $combo->name }}
+
+                                    </div>
+
+                                    <small class="text-muted d-block mt-1">
+                                        Combo
+                                    </small>
+
+                                    <div class="fw-bold mt-2">
+
+                                        ₹{{ number_format(
+                                            (float) $combo->price,
                                             2
                                         ) }}
 
@@ -345,7 +410,7 @@
 
                             <label class="form-label fw-semibold">
 
-                                Discount
+                                Discount (%)
 
                             </label>
 
@@ -355,8 +420,10 @@
                                 id="discount"
                                 value="0"
                                 min="0"
+                                max="100"
                                 step="0.01"
-                                class="form-control">
+                                class="form-control"
+                                placeholder="0">
 
                         </div>
 
@@ -399,7 +466,7 @@
                         </div>
 
 
-                        <div class="d-flex justify-content-between mb-2">
+                        <div id="discountRow" class="d-flex justify-content-between mb-2" style="display: none;">
 
                             <span class="text-muted">
                                 Discount
@@ -509,6 +576,9 @@ document.addEventListener(
         const discountInput =
             document.getElementById('discount');
 
+        const discountRow =
+            document.getElementById('discountRow');
+
         const placeOrder =
             document.getElementById('placeOrder');
 
@@ -530,11 +600,20 @@ document.addEventListener(
                         const id =
                             this.dataset.id;
 
+                        const type =
+                            this.dataset.type || 'product';
+
+                        const key =
+                            `${type}:${id}`;
+
                         const name =
                             this.dataset.name;
 
                         const size =
                             this.dataset.size;
+
+                        const unit =
+                            this.dataset.unit;
 
                         const price =
                             parseFloat(
@@ -542,25 +621,24 @@ document.addEventListener(
                             );
 
 
-                        if (!cart[id]) {
+                        if (!cart[key]) {
 
-                            cart[id] = {
+                            cart[key] = {
 
+                                key: key,
                                 id: id,
-
+                                type: type,
                                 name: name,
-
                                 size: size,
-
+                                unit: unit,
                                 price: price,
-
                                 quantity: 1
 
                             };
 
                         } else {
 
-                            cart[id].quantity++;
+                            cart[key].quantity++;
 
                         }
 
@@ -642,9 +720,8 @@ document.addEventListener(
 
                             <small class="text-muted">
 
-                                ${escapeHtml(item.size || '')}
-
-                                × ₹${item.price.toFixed(2)}
+                                ${escapeHtml(formatDisplayNumber(item.size))}
+                                ${escapeHtml(item.unit ? ' - ' + item.unit : '')}
 
                             </small>
 
@@ -654,7 +731,7 @@ document.addEventListener(
                         <button
                             type="button"
                             class="btn btn-sm text-danger remove-item"
-                            data-id="${item.id}">
+                            data-key="${item.key}">
 
                             <i class="bi bi-x-lg"></i>
 
@@ -673,7 +750,7 @@ document.addEventListener(
                             <button
                                 type="button"
                                 class="btn btn-light decrease"
-                                data-id="${item.id}">
+                                data-key="${item.key}">
 
                                 −
 
@@ -689,7 +766,7 @@ document.addEventListener(
                             <button
                                 type="button"
                                 class="btn btn-light increase"
-                                data-id="${item.id}">
+                                data-key="${item.key}">
 
                                 +
 
@@ -711,12 +788,22 @@ document.addEventListener(
 
                     <input
                         type="hidden"
-                        name="items[${item.id}][menu_item_id]"
+                        name="items[${item.key}][id]"
                         value="${item.id}">
 
                     <input
                         type="hidden"
-                        name="items[${item.id}][quantity]"
+                        name="items[${item.key}][type]"
+                        value="${item.type}">
+
+                    <input
+                        type="hidden"
+                        name="items[${item.key}][${item.type === 'combo' ? 'combo_id' : 'menu_item_id'}]"
+                        value="${item.id}">
+
+                    <input
+                        type="hidden"
+                        name="items[${item.key}][quantity]"
                         value="${item.quantity}">
 
                 `;
@@ -739,11 +826,12 @@ document.addEventListener(
                         'click',
                         function () {
 
-                            cart[
-                                this.dataset.id
-                            ].quantity++;
+                            const key = this.dataset.key;
 
-                            renderCart();
+                            if (cart[key]) {
+                                cart[key].quantity++;
+                                renderCart();
+                            }
 
                         }
                     );
@@ -763,18 +851,19 @@ document.addEventListener(
                         'click',
                         function () {
 
-                            const id =
-                                this.dataset.id;
+                            const key = this.dataset.key;
 
+                            if (!cart[key]) {
+                                return;
+                            }
 
-                            cart[id].quantity--;
-
+                            cart[key].quantity--;
 
                             if (
-                                cart[id].quantity <= 0
+                                cart[key].quantity <= 0
                             ) {
 
-                                delete cart[id];
+                                delete cart[key];
 
                             }
 
@@ -800,7 +889,7 @@ document.addEventListener(
                         function () {
 
                             delete cart[
-                                this.dataset.id
+                                this.dataset.key
                             ];
 
                             renderCart();
@@ -836,20 +925,27 @@ document.addEventListener(
                 });
 
 
-            let discount =
+            const discountPercent =
                 parseFloat(
                     discountInput.value
                 ) || 0;
 
-
-            discount =
-                Math.min(
-                    discount,
-                    subtotal
-                );
+            const discount =
+                subtotal > 0
+                    ? Math.min(
+                        subtotal,
+                        (subtotal * discountPercent) / 100
+                    )
+                    : 0;
 
             const taxableAmount =
                 Math.max(0, subtotal - discount);
+
+            if (discountPercent > 0) {
+                discountRow.style.display = 'flex';
+            } else {
+                discountRow.style.display = 'none';
+            }
 
             let tax = 0;
             if (taxableAmount > 0 && Array.isArray(activeTaxes)) {
@@ -966,21 +1062,20 @@ document.addEventListener(
                         );
 
 
+                    const tableSelect = document.getElementById('table_id');
+
                     if (
                         this.value === 'dine_in'
                     ) {
 
-                        tableContainer.style.display =
-                            '';
+                        tableContainer.style.display = '';
+                        tableSelect.setAttribute('required', 'required');
 
                     } else {
 
-                        tableContainer.style.display =
-                            'none';
-
-                        document.getElementById(
-                            'table_id'
-                        ).value = '';
+                        tableContainer.style.display = 'none';
+                        tableSelect.value = '';
+                        tableSelect.removeAttribute('required');
 
                     }
 
@@ -993,6 +1088,25 @@ document.addEventListener(
         | HTML escape
         |--------------------------------------------------------------------------
         */
+
+        function formatDisplayNumber(value)
+        {
+            if (value === null || value === undefined || value === '') {
+                return '';
+            }
+
+            const numeric = Number(value);
+
+            if (Number.isNaN(numeric)) {
+                return String(value);
+            }
+
+            if (Number.isInteger(numeric)) {
+                return String(numeric);
+            }
+
+            return String(Number(numeric.toFixed(3))).replace(/\.0+$|(?<=\.[0-9]*?)0+$/, '');
+        }
 
         function escapeHtml(value)
         {

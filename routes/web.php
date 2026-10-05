@@ -461,6 +461,11 @@ Route::middleware(['auth'])
             [OrderController::class, 'show']
         )->name('orders.show');
 
+        Route::get(
+            'orders/{order}/receipt',
+            [OrderController::class, 'receipt']
+        )->name('orders.receipt');
+
         Route::put(
             'orders/{order}/status',
             [OrderController::class, 'updateStatus']

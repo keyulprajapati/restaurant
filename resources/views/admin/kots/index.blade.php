@@ -6,6 +6,27 @@
 
 @section('content')
 
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h4 class="fw-bold mb-1">
+            Kitchen Orders
+        </h4>
+
+        <p class="text-muted mb-0">
+            Live kitchen queue updates automatically.
+        </p>
+
+    </div>
+
+    <span class="badge text-bg-light border rounded-pill px-3 py-2">
+        <i class="bi bi-arrow-repeat me-1"></i>
+        Auto-refresh every 15s
+    </span>
+
+</div>
+
 <div class="row g-4">
 
     @forelse($kots as $kot)
@@ -87,10 +108,12 @@
                     </div>
 
 
-                    @foreach(
-                        $kot->items
-                        as $item
-                    )
+                    @php
+                        $comboItemLines = $kot->items->filter(fn ($item) => !empty($item->notes) && str_starts_with($item->notes, 'Combo: '));
+                        $mainItemLines = $kot->items->filter(fn ($item) => empty($item->notes) || !str_starts_with($item->notes, 'Combo: '));
+                    @endphp
+
+                    @foreach($mainItemLines as $item)
 
                         <div
                             class="d-flex
@@ -106,12 +129,12 @@
 
                                 </strong>
 
-                                @if($item->size)
+                                @if($item->size || $item->unit)
 
                                     <small
                                         class="text-muted d-block">
 
-                                        {{ $item->size }}
+                                        {{ trim(($item->size ?? '') . ' ' . ($item->unit ?? '')) }}
 
                                     </small>
 
@@ -141,6 +164,28 @@
                         </div>
 
                     @endforeach
+
+                    @if($comboItemLines->isNotEmpty())
+                        <div class="mt-3 mb-2 rounded-3 border border-warning-subtle bg-warning-subtle p-2" style="border-left: 4px solid #f59e0b;">
+                            <small class="text-uppercase text-warning-emphasis fw-bold" style="letter-spacing: 0.08em;">
+                                Combo items
+                            </small>
+                        </div>
+
+                        @foreach($comboItemLines as $item)
+                            <div class="d-flex justify-content-between border-bottom py-2" style="background: rgba(245, 158, 11, 0.03);">
+                                <div>
+                                    <strong>{{ $item->item_name }}</strong>
+
+                                    @if($item->size || $item->unit)
+                                        <small class="text-muted d-block">{{ trim(($item->size ?? '') . ' ' . ($item->unit ?? '')) }}</small>
+                                    @endif
+                                </div>
+
+                                <div class="fw-bold fs-5">× {{ $item->quantity }}</div>
+                            </div>
+                        @endforeach
+                    @endif
 
 
                     @if($kot->notes)
@@ -322,5 +367,21 @@
     {{ $kots->links() }}
 
 </div>
+
+@push('scripts')
+    <script>
+        const KOT_REFRESH_INTERVAL_MS = 15000;
+
+        const kotRefreshTimer = setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                window.location.reload();
+            }
+        }, KOT_REFRESH_INTERVAL_MS);
+
+        window.addEventListener('beforeunload', () => {
+            clearInterval(kotRefreshTimer);
+        });
+    </script>
+@endpush
 
 @endsection
