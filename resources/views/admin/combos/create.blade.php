@@ -237,17 +237,11 @@
                     class="form-select"
                     required>
 
-                    <option value="pcs">
-                        Pcs
-                    </option>
-
-                    <option value="gram">
-                        Gram
-                    </option>
-
-                    <option value="kg">
-                        KG
-                    </option>
+                    @foreach($units as $unit)
+                        <option value="{{ $unit->short_code }}">
+                            {{ $unit->name }}
+                        </option>
+                    @endforeach
 
                 </select>
 

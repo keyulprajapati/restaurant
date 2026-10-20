@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -11,7 +12,8 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::latest()
+        $products = Product::with('unitRelation')
+            ->latest()
             ->paginate(15);
 
         return view(
@@ -22,7 +24,9 @@ class ProductController extends Controller
 
     public function create()
     {
-        return view('admin.products.create');
+        $units = Unit::active()->orderBy('name')->get();
+
+        return view('admin.products.create', compact('units'));
     }
 
     public function store(Request $request)
@@ -48,11 +52,9 @@ class ProductController extends Controller
 
             'unit' => [
                 'required',
-                Rule::in([
-                    'kg',
-                    'gram',
-                    'pcs',
-                ]),
+                'string',
+                'max:50',
+                Rule::exists('units', 'short_code')->where('is_active', true),
             ],
 
             'food_type' => [
@@ -83,9 +85,14 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
+        $units = Unit::where('is_active', true)
+            ->orWhere('short_code', $product->unit)
+            ->orderBy('name')
+            ->get();
+
         return view(
             'admin.products.edit',
-            compact('product')
+            compact('product', 'units')
         );
     }
 
@@ -114,11 +121,9 @@ class ProductController extends Controller
 
             'unit' => [
                 'required',
-                Rule::in([
-                    'kg',
-                    'gram',
-                    'pcs',
-                ]),
+                'string',
+                'max:50',
+                Rule::exists('units', 'short_code'),
             ],
 
             'food_type' => [
