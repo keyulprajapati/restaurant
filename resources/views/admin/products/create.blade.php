@@ -32,6 +32,31 @@
 
                     <div class="row g-3">
 
+                        <div class="col-md-6">
+
+                            <label class="form-label fw-semibold" for="category_id">
+                                Category
+                            </label>
+
+                            <select
+                                name="category_id"
+                                id="category_id"
+                                class="form-select">
+
+                                <option value="">Select category</option>
+
+                                @foreach($categories as $category)
+                                    <option
+                                        value="{{ $category->id }}"
+                                        @selected(old('category_id') == $category->id)>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+
+                            </select>
+
+                        </div>
+
                         <div class="col-12">
 
                             <label class="form-label fw-semibold">

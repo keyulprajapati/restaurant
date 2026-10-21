@@ -649,7 +649,7 @@
 
         <div id="dishesList">
             @forelse($products as $product)
-                <div class="dish-card dish-item"
+                <div class="dish-card dish-item product-card product-item"
                      data-id="{{ $product->id }}"
                      data-type="product"
                      data-name="{{ strtolower($product->name) }}"
@@ -814,6 +814,8 @@
             } else {
                 cart[key] = { key: key, id: parseInt(id, 10), type: type, name: name, price: parseFloat(price), qty: 1 };
             }
+
+            console.log('Added to cart:', cart[key]);
             saveCart();
             updateButton(key);
         }
@@ -853,6 +855,7 @@
                 const card = document.querySelector(`.${type}-item[data-id="${id}"]`);
                 const name = card ? card.getAttribute('data-display-name') : '';
                 const price = card ? card.getAttribute('data-price') : 0;
+                console.log('Reset button for:', card);
                 const safeName = name ? name.replace(/'/g, "\\'") : '';
                 wrapper.innerHTML = `
                     <button type="button" class="btn-add" onclick="addItem(${id}, '${safeName}', ${price}, '${type}')">

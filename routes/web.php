@@ -16,6 +16,8 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\KotController;
 use App\Http\Controllers\Admin\TaxController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\BranchController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\TableOrderController;
 
 Route::get('/', function () {
@@ -38,11 +40,7 @@ Route::middleware(['auth'])
     ->name('admin.')
     ->group(function () {
 
-        Route::get('/dashboard', function () {
-
-            return view('admin.dashboard');
-
-        })
+        Route::get('/dashboard', [DashboardController::class, 'index'])
             ->middleware('permission:dashboard.view')
             ->name('dashboard');
         /*
@@ -434,6 +432,8 @@ Route::middleware(['auth'])
             'customers',
             CustomerController::class
         );
+
+        Route::resource('branches', BranchController::class);
 
         Route::get(
             'pos',

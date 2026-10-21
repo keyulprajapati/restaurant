@@ -27,6 +27,28 @@
 
 </div>
 
+<form method="GET" class="row g-2 mb-4">
+    <div class="col-md-4">
+        <select name="branch_id" class="form-select">
+            <option value="">All Accessible Branches</option>
+            @foreach($branches as $branch)
+                <option value="{{ $branch->id }}" @selected((string) request('branch_id') === (string) $branch->id)>{{ $branch->name }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="status" class="form-select">
+            <option value="">All Statuses</option>
+            @foreach(['pending', 'preparing', 'ready', 'served', 'cancelled'] as $status)
+                <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-dark w-100"><i class="bi bi-search me-1"></i> Filter</button>
+    </div>
+</form>
+
 <div class="row g-4">
 
     @forelse($kots as $kot)
@@ -56,6 +78,8 @@
                                 ) }}
 
                             </small>
+
+                            <small class="d-block text-muted">{{ $kot->order->branch?->name ?? 'Unassigned branch' }}</small>
 
                         </div>
 

@@ -123,6 +123,22 @@
                         </div>
 
                         <div class="col-md-6">
+                            <label class="form-label fw-semibold">Branches</label>
+                            <select name="branch_ids[]" class="form-select" multiple size="4">
+                                @foreach($branches as $branch)
+                                    <option value="{{ $branch->id }}" @selected(in_array($branch->id, old('branch_ids', $assignedBranchIds)))>{{ $branch->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('branch_ids')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" name="all_branches" value="1" id="all_branches" @checked(old('all_branches', $user->all_branches))>
+                                <label class="form-check-label" for="all_branches">Access all branches</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
 
                             <label class="form-label fw-semibold">
                                 New Password

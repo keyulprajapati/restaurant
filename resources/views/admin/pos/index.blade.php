@@ -8,6 +8,14 @@
 
 <div class="container-fluid px-0">
 
+    <div
+        id="cartFeedback"
+        class="alert alert-success small py-2 px-3 mb-0 d-none"
+        role="status"
+        aria-live="polite"
+        style="position: fixed; top: 84px; left: 50%; transform: translateX(-50%); z-index: 1080; width: min(440px, calc(100vw - 24px)); box-shadow: 0 8px 24px rgba(0, 0, 0, .16);">
+    </div>
+
     @if(session('success'))
 
         <div class="alert alert-success alert-dismissible fade show">
@@ -53,6 +61,17 @@
 
                         <div class="row g-3">
 
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">
+                                    Branch
+                                </label>
+                                <select name="branch_id" id="branch_id" class="form-select" required>
+                                    <option value="">Select Branch</option>
+                                    @foreach($branches as $branch)
+                                        <option value="{{ $branch->id }}" @selected((string) $selectedBranchId === (string) $branch->id)>{{ $branch->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
 
                             <div class="col-md-3">
 
@@ -85,7 +104,7 @@
                             </div>
 
 
-                            <div class="col-md-4">
+                            <div class="col-md-3">
 
                                 <label class="form-label fw-semibold">
 
@@ -127,7 +146,7 @@
 
 
                             <div
-                                class="col-md-5"
+                                class="col-md-3"
                                 id="tableContainer">
 
                                 <label class="form-label fw-semibold">
@@ -202,15 +221,21 @@
 
                 {{-- Menu Items --}}
 
-                <div class="row g-3" id="menuItems">
+                <div id="menuItems">
 
-                    @foreach($menuItems as $item)
+                    @foreach($menuItems as $categoryName => $categoryItems)
 
-                        <div
-                            class="col-6 col-md-4 col-lg-3 menu-product"
-                            data-name="{{ strtolower(
-                                $item->name
-                            ) }}">
+                        <section class="menu-category-group mb-4">
+
+                            <h5 class="fw-bold mb-3">{{ $categoryName }}</h5>
+
+                            <div class="row g-3">
+
+                                @foreach($categoryItems as $item)
+
+                                    <div
+                                        class="col-6 col-md-4 col-lg-3 menu-product"
+                                        data-name="{{ strtolower($item->name) }}">
 
                             <button
                                 type="button"
@@ -267,11 +292,25 @@
 
                             </button>
 
-                        </div>
+                                    </div>
+
+                                @endforeach
+
+                            </div>
+
+                        </section>
 
                     @endforeach
 
-                    @foreach($combos as $combo)
+                    @if($combos->isNotEmpty())
+
+                        <section class="menu-category-group mb-4">
+
+                            <h5 class="fw-bold mb-3">Combos</h5>
+
+                            <div class="row g-3">
+
+                                @foreach($combos as $combo)
 
                         <div
                             class="col-6 col-md-4 col-lg-3 menu-product"
@@ -325,9 +364,15 @@
 
                             </button>
 
-                        </div>
+                                    </div>
 
-                    @endforeach
+                                @endforeach
+
+                            </div>
+
+                        </section>
+
+                    @endif
 
                 </div>
 
@@ -582,6 +627,11 @@ document.addEventListener(
         const placeOrder =
             document.getElementById('placeOrder');
 
+        const cartFeedback =
+            document.getElementById('cartFeedback');
+
+        let cartFeedbackTimer;
+
 
         /*
         |--------------------------------------------------------------------------
@@ -641,6 +691,13 @@ document.addEventListener(
                             cart[key].quantity++;
 
                         }
+
+                        cartFeedback.textContent = `Added ${name} to cart. Quantity: ${cart[key].quantity}`;
+                        cartFeedback.classList.remove('d-none');
+                        clearTimeout(cartFeedbackTimer);
+                        cartFeedbackTimer = setTimeout(() => {
+                            cartFeedback.classList.add('d-none');
+                        }, 2500);
 
 
                         renderCart();
@@ -1032,12 +1089,20 @@ document.addEventListener(
                         )
                         .forEach(function (product) {
 
-                            product.style.display =
-                                product.dataset.name
-                                    .includes(search)
-                                    ? ''
-                                    : 'none';
+                            product.style.display = product.dataset.name.includes(search)
+                                ? ''
+                                : 'none';
 
+                        });
+
+                    document
+                        .querySelectorAll('.menu-category-group')
+                        .forEach(function (group) {
+                            const hasVisibleProducts = Array.from(
+                                group.querySelectorAll('.menu-product')
+                            ).some(product => product.style.display !== 'none');
+
+                            group.style.display = hasVisibleProducts ? '' : 'none';
                         });
 
                 }
@@ -1049,6 +1114,22 @@ document.addEventListener(
         | Order Type
         |--------------------------------------------------------------------------
         */
+
+        document
+            .getElementById('branch_id')
+            .addEventListener(
+                'change',
+                function () {
+                    const branchId = this.value;
+                    const url = new URL(window.location.href);
+                    if (branchId) {
+                        url.searchParams.set('branch_id', branchId);
+                    } else {
+                        url.searchParams.delete('branch_id');
+                    }
+                    window.location.href = url.toString();
+                }
+            );
 
         document
             .getElementById('order_type')

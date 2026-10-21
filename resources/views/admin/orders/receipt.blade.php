@@ -6,8 +6,7 @@
     <title>Invoice - {{ $order->order_number }}</title>
     <style>
         @page {
-            size: A4;
-            margin: 8mm;
+            margin: 0;
         }
 
         html, body {
@@ -151,24 +150,44 @@
 
         @media print {
             html, body {
-                width: 100%;
-                height: 100%;
-                overflow: hidden;
+                width: 80mm;
+                height: auto;
+                overflow: visible;
             }
 
             body {
                 display: block;
                 padding: 0;
                 margin: 0;
+                background: #ffffff;
             }
 
             .receipt {
-                width: 100%;
+                width: 80mm;
                 max-width: none;
                 margin: 0;
                 border: none;
                 border-radius: 0;
-                padding: 0;
+                padding: 3mm;
+                box-shadow: none;
+                background: #ffffff;
+            }
+
+            .header {
+                background: none;
+                border-radius: 0;
+                break-inside: avoid;
+            }
+
+            .items tr,
+            .total-box,
+            .footer {
+                break-inside: avoid;
+            }
+
+            .items th,
+            .items td {
+                border-color: #000000;
             }
         }
     </style>

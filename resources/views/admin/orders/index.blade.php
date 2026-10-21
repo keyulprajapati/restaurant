@@ -53,7 +53,16 @@
             method="GET"
             class="row g-3 mb-4">
 
-            <div class="col-md-3">
+            <div class="col-md-2">
+                <select name="branch_id" class="form-select">
+                    <option value="">All Accessible Branches</option>
+                    @foreach($branches as $branch)
+                        <option value="{{ $branch->id }}" @selected((string) request('branch_id') === (string) $branch->id)>{{ $branch->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-2">
 
                 <select
                     name="status"
@@ -89,7 +98,7 @@
 
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-2">
 
                 <select
                     name="order_type"
@@ -128,7 +137,7 @@
             </div>
 
 
-            <div class="col-md-3">
+            <div class="col-md-2">
 
                 <select
                     name="restaurant_table_id"
@@ -155,7 +164,7 @@
             </div>
 
 
-            <div class="col-md-3 d-flex gap-2">
+            <div class="col-md-4 d-flex gap-2">
 
                 <button class="btn btn-dark flex-fill">
                     <i class="bi bi-search me-1"></i> Filter
@@ -179,6 +188,8 @@
                     <tr>
 
                         <th>Order</th>
+
+                        <th>Branch</th>
 
                         <th>Customer</th>
 
@@ -222,6 +233,8 @@
                                 </small>
 
                             </td>
+
+                            <td>{{ $order->branch?->name ?? 'Unassigned' }}</td>
 
 
                             <td>

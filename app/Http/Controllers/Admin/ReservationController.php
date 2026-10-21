@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\Reservation;
 use App\Models\RestaurantTable;
 use Illuminate\Http\Request;
@@ -14,10 +15,16 @@ class ReservationController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Reservation::with([
-    'customer',
-    'table'
-]);
+        $user = auth()->user();
+        $allowedBranchIds = $user->allowedBranchIds();
+        $branches = $this->accessibleBranches();
+        $query = Reservation::with(['customer', 'table', 'branch'])
+            ->when($allowedBranchIds !== null, fn ($query) => $query->whereIn('branch_id', $allowedBranchIds));
+
+        if ($request->filled('branch_id')) {
+            $this->ensureBranchAccess((int) $request->branch_id);
+            $query->where('branch_id', $request->branch_id);
+        }
 
         if ($request->filled('search')) {
 
@@ -70,27 +77,46 @@ class ReservationController extends Controller
 
         return view(
             'admin.reservations.index',
-            compact('reservations')
+            compact('reservations', 'branches')
         );
     }
 
 
     public function create()
     {
+        $branches = $this->accessibleBranches();
+        $selectedBranchId = request()->query('branch_id', $branches->first()?->id);
+        if ($selectedBranchId) {
+            $this->ensureBranchAccess((int) $selectedBranchId);
+        }
+
+        $allowedBranchIds = auth()->user()->allowedBranchIds();
         $tables = RestaurantTable::active()
+            ->when($allowedBranchIds !== null, fn ($query) => $query->whereIn('branch_id', $allowedBranchIds))
             ->orderBy('table_number')
             ->get();
 
         return view(
             'admin.reservations.create',
-            compact('tables')
+            compact('tables', 'branches', 'selectedBranchId')
         );
     }
 
 
     public function store(Request $request)
 {
+    $user = auth()->user();
     $validated = $request->validate([
+
+        'branch_id' => [
+            'required',
+            Rule::exists('branches', 'id')->where('is_active', true),
+            function ($attribute, $value, $fail) use ($user) {
+                if (!$user->canAccessBranch((int) $value)) {
+                    $fail('You do not have access to the selected branch.');
+                }
+            },
+        ],
 
         'customer_id' => [
             'nullable',
@@ -143,7 +169,7 @@ class ReservationController extends Controller
 
         'restaurant_table_id' => [
             'nullable',
-            'exists:restaurant_tables,id',
+            Rule::exists('restaurant_tables', 'id')->where('branch_id', $request->input('branch_id')),
         ],
 
         'status' => [
@@ -266,6 +292,8 @@ class ReservationController extends Controller
 
     $reservation = Reservation::create([
 
+        'branch_id' => $validated['branch_id'],
+
         'customer_id' => $customer->id,
 
         'restaurant_table_id' =>
@@ -306,7 +334,12 @@ class ReservationController extends Controller
 
     public function edit(Reservation $reservation)
     {
+        $this->ensureReservationAccess($reservation);
+        $branches = $this->accessibleBranches();
+        $selectedBranchId = $reservation->branch_id;
+        $allowedBranchIds = auth()->user()->allowedBranchIds();
         $tables = RestaurantTable::active()
+            ->when($allowedBranchIds !== null, fn ($query) => $query->whereIn('branch_id', $allowedBranchIds))
             ->orderBy('table_number')
             ->get();
 
@@ -314,7 +347,9 @@ class ReservationController extends Controller
             'admin.reservations.edit',
             compact(
                 'reservation',
-                'tables'
+                'tables',
+                'branches',
+                'selectedBranchId'
             )
         );
     }
@@ -324,7 +359,19 @@ class ReservationController extends Controller
     Request $request,
     Reservation $reservation
 ) {
+    $this->ensureReservationAccess($reservation);
+    $user = auth()->user();
     $validated = $request->validate([
+
+        'branch_id' => [
+            'required',
+            Rule::exists('branches', 'id')->where('is_active', true),
+            function ($attribute, $value, $fail) use ($user) {
+                if (!$user->canAccessBranch((int) $value)) {
+                    $fail('You do not have access to the selected branch.');
+                }
+            },
+        ],
 
         'customer_id' => [
             'nullable',
@@ -375,7 +422,7 @@ class ReservationController extends Controller
 
         'restaurant_table_id' => [
             'nullable',
-            'exists:restaurant_tables,id',
+            Rule::exists('restaurant_tables', 'id')->where('branch_id', $request->input('branch_id')),
         ],
 
         'status' => [
@@ -498,6 +545,8 @@ class ReservationController extends Controller
 
     $reservation->update([
 
+        'branch_id' => $validated['branch_id'],
+
         'customer_id' => $customer->id,
 
         'restaurant_table_id' =>
@@ -537,6 +586,8 @@ class ReservationController extends Controller
     public function destroy(
         Reservation $reservation
     ) {
+
+        $this->ensureReservationAccess($reservation);
 
         $reservation->delete();
 
@@ -619,6 +670,32 @@ class ReservationController extends Controller
 
 
         return false;
+    }
+
+    private function accessibleBranches()
+    {
+        $allowedBranchIds = auth()->user()->allowedBranchIds();
+
+        return Branch::query()
+            ->where('is_active', true)
+            ->when($allowedBranchIds !== null, fn ($query) => $query->whereIn('id', $allowedBranchIds))
+            ->orderBy('name')
+            ->get();
+    }
+
+    private function ensureBranchAccess(int $branchId): void
+    {
+        abort_unless(auth()->user()->canAccessBranch($branchId), 403);
+    }
+
+    private function ensureReservationAccess(Reservation $reservation): void
+    {
+        $user = auth()->user();
+        $hasAccess = $reservation->branch_id
+            ? $user->canAccessBranch((int) $reservation->branch_id)
+            : $user->all_branches;
+
+        abort_unless($hasAccess, 403);
     }
 
     public function searchCustomer(Request $request)

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\Combo;
 use App\Models\Customer;
 use App\Models\Kot;
@@ -16,14 +17,35 @@ use Illuminate\Validation\Rule;
 
 class PosController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $menuItems = Product::query()
+        $currentUser = auth()->user();
+        $allowedBranchIds = $currentUser->allowedBranchIds();
+        $branches = Branch::query()
             ->where('is_active', true)
+            ->when($allowedBranchIds !== null, fn ($query) => $query->whereIn('id', $allowedBranchIds))
             ->orderBy('name')
             ->get();
 
+        $selectedBranchId = $request->query('branch_id', $branches->first()?->id);
+        if ($selectedBranchId && !$currentUser->canAccessBranch((int) $selectedBranchId)) {
+            abort(403);
+        }
+
+        if (empty($selectedBranchId) && $branches->isNotEmpty()) {
+            $selectedBranchId = $branches->first()->id;
+        }
+
+        $menuItems = Product::query()
+            ->with('category')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get()
+            ->groupBy(fn (Product $product) => $product->category?->name ?? 'Uncategorized')
+            ->sortKeys();
+
         $tables = RestaurantTable::query()
+            ->when($selectedBranchId, fn ($query) => $query->where('branch_id', $selectedBranchId))
             ->where('is_active', true)
             ->orderBy('table_number')
             ->get();
@@ -43,7 +65,9 @@ class PosController extends Controller
                 'menuItems',
                 'tables',
                 'taxes',
-                'combos'
+                'combos',
+                'branches',
+                'selectedBranchId'
             )
         );
     }
@@ -51,7 +75,19 @@ class PosController extends Controller
 
     public function store(Request $request)
     {
+        $currentUser = auth()->user();
+
         $validated = $request->validate([
+
+            'branch_id' => [
+                'required',
+                Rule::exists('branches', 'id')->where('is_active', true),
+                function ($attribute, $value, $fail) use ($currentUser) {
+                    if (!$currentUser->canAccessBranch((int) $value)) {
+                        $fail('You do not have access to the selected branch.');
+                    }
+                },
+            ],
 
             'customer_id' => [
                 'required',
@@ -61,7 +97,7 @@ class PosController extends Controller
             'restaurant_table_id' => [
                 'required_if:order_type,dine_in',
                 'nullable',
-                'exists:restaurant_tables,id',
+                Rule::exists('restaurant_tables', 'id')->where('branch_id', $request->input('branch_id')),
             ],
 
             'order_type' => [
@@ -207,6 +243,9 @@ class PosController extends Controller
 
 
             $order = Order::create([
+
+                'branch_id' =>
+                    $validated['branch_id'],
 
                 'order_number' =>
                     $this->generateOrderNumber(),

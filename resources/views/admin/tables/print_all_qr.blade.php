@@ -156,6 +156,9 @@
                 <div class="restaurant-brand">
                     {{ setting('site_name', 'Brahmani Lili Haldar') }}
                 </div>
+                @if($table->branch)
+                    <div class="small fw-semibold">{{ $table->branch->name }}</div>
+                @endif
                 <div class="table-badge mt-2">
                     TABLE {{ $table->table_number }}
                 </div>

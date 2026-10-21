@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\RestaurantTable;
 use App\Services\QrCodeService;
 use Illuminate\Http\Request;
@@ -13,7 +14,18 @@ class RestaurantTableController extends Controller
 {
     public function index(Request $request)
     {
-        $query = RestaurantTable::query()->with('activeOrder');
+        $allowedBranchIds = auth()->user()->allowedBranchIds();
+
+        $query = RestaurantTable::query()->with(['activeOrder', 'branch']);
+
+        if ($allowedBranchIds !== null) {
+            $query->whereIn('branch_id', $allowedBranchIds);
+        }
+
+        if ($request->filled('branch_id')) {
+            $this->ensureBranchAccess((int) $request->branch_id);
+            $query->where('branch_id', $request->branch_id);
+        }
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -56,7 +68,10 @@ class RestaurantTableController extends Controller
             ->paginate(15)
             ->withQueryString();
 
+        $branches = $this->accessibleBranches();
+
         $areas = RestaurantTable::query()
+            ->when($allowedBranchIds !== null, fn ($query) => $query->whereIn('branch_id', $allowedBranchIds))
             ->whereNotNull('area')
             ->where('area', '!=', '')
             ->distinct()
@@ -67,37 +82,57 @@ class RestaurantTableController extends Controller
             'admin.tables.index',
             compact(
                 'tables',
-                'areas'
+                'areas',
+                'branches'
             )
         );
     }
 
     public function create()
     {
-        return view('admin.tables.create');
+        $branches = $this->accessibleBranches();
+
+        return view('admin.tables.create', compact('branches'));
     }
 
     public function createExtra()
     {
+        $allowedBranchIds = auth()->user()->allowedBranchIds();
         $areas = RestaurantTable::query()
+            ->when($allowedBranchIds !== null, fn ($query) => $query->whereIn('branch_id', $allowedBranchIds))
             ->whereNotNull('area')
             ->where('area', '!=', '')
             ->distinct()
             ->orderBy('area')
             ->pluck('area');
 
-        $lastTable = RestaurantTable::orderBy('id', 'desc')->first();
+        $branches = $this->accessibleBranches();
+
+        $lastTable = RestaurantTable::query()
+            ->when($allowedBranchIds !== null, fn ($query) => $query->whereIn('branch_id', $allowedBranchIds))
+            ->orderBy('id', 'desc')
+            ->first();
         $suggestedStart = 1;
         if ($lastTable && preg_match('/(\d+)$/', $lastTable->table_number, $matches)) {
             $suggestedStart = ((int) $matches[1]) + 1;
         }
 
-        return view('admin.tables.extra', compact('areas', 'suggestedStart'));
+        return view('admin.tables.extra', compact('areas', 'suggestedStart', 'branches'));
     }
 
     public function storeExtra(Request $request)
     {
+        $user = auth()->user();
         $validated = $request->validate([
+            'branch_id' => [
+                'required',
+                Rule::exists('branches', 'id'),
+                function ($attribute, $value, $fail) use ($user) {
+                    if (!$user->canAccessBranch((int) $value)) {
+                        $fail('You do not have access to the selected branch.');
+                    }
+                },
+            ],
             'prefix' => ['nullable', 'string', 'max:15'],
             'start_number' => ['required', 'integer', 'min:1'],
             'count' => ['required', 'integer', 'min:1', 'max:50'],
@@ -133,6 +168,7 @@ class RestaurantTableController extends Controller
                 }
 
                 RestaurantTable::create([
+                    'branch_id' => $validated['branch_id'],
                     'table_number' => $tableNumber,
                     'name' => 'Table ' . $formattedNum,
                     'capacity' => $validated['capacity'],
@@ -157,7 +193,19 @@ class RestaurantTableController extends Controller
 
     public function store(Request $request)
     {
+        $user = auth()->user();
+
         $validated = $request->validate([
+            'branch_id' => [
+                'required',
+                Rule::exists('branches', 'id'),
+                function ($attribute, $value, $fail) use ($user) {
+                    if (!$user->canAccessBranch((int) $value)) {
+                        $fail('You do not have access to the selected branch.');
+                    }
+                },
+            ],
+
             'table_number' => [
                 'required',
                 'string',
@@ -202,6 +250,7 @@ class RestaurantTableController extends Controller
         ]);
 
         RestaurantTable::create([
+            'branch_id' => $validated['branch_id'],
             'table_number' => $validated['table_number'],
             'name' => $validated['name'] ?? null,
             'capacity' => $validated['capacity'],
@@ -222,9 +271,12 @@ class RestaurantTableController extends Controller
 
     public function edit(RestaurantTable $table)
     {
+        $this->ensureTableAccess($table);
+        $branches = $this->accessibleBranches();
+
         return view(
             'admin.tables.edit',
-            compact('table')
+            compact('table', 'branches')
         );
     }
 
@@ -232,7 +284,20 @@ class RestaurantTableController extends Controller
         Request $request,
         RestaurantTable $table
     ) {
+        $this->ensureTableAccess($table);
+        $user = auth()->user();
+
         $validated = $request->validate([
+            'branch_id' => [
+                'required',
+                Rule::exists('branches', 'id'),
+                function ($attribute, $value, $fail) use ($user) {
+                    if (!$user->canAccessBranch((int) $value)) {
+                        $fail('You do not have access to the selected branch.');
+                    }
+                },
+            ],
+
             'table_number' => [
                 'required',
                 'string',
@@ -289,6 +354,7 @@ class RestaurantTableController extends Controller
         ]);
 
         $table->update([
+            'branch_id' => $validated['branch_id'],
             'table_number' => $validated['table_number'],
             'name' => $validated['name'] ?? null,
             'capacity' => $validated['capacity'],
@@ -309,6 +375,7 @@ class RestaurantTableController extends Controller
 
     public function qrCode(Request $request, RestaurantTable $table)
     {
+        $this->ensureTableAccess($table);
         $customBase = $request->query('base_url');
         if (!empty($customBase)) {
             $url = rtrim($customBase, '/') . '/table/' . $table->table_number;
@@ -349,6 +416,7 @@ class RestaurantTableController extends Controller
 
     public function printQr(RestaurantTable $table)
     {
+        $this->ensureTableAccess($table);
         $url = $table->url;
         $svg = QrCodeService::generateSvg($url, 260);
 
@@ -357,7 +425,9 @@ class RestaurantTableController extends Controller
 
     public function printAllQr(Request $request)
     {
-        $query = RestaurantTable::query()->where('is_active', true);
+        $allowedBranchIds = auth()->user()->allowedBranchIds();
+        $query = RestaurantTable::query()->where('is_active', true)
+            ->when($allowedBranchIds !== null, fn ($query) => $query->whereIn('branch_id', $allowedBranchIds));
         if ($request->filled('area')) {
             $query->where('area', $request->area);
         }
@@ -373,6 +443,7 @@ class RestaurantTableController extends Controller
 
     public function destroy(RestaurantTable $table)
     {
+        $this->ensureTableAccess($table);
         if ($table->status === 'occupied') {
             return back()->with(
                 'error',
@@ -388,5 +459,26 @@ class RestaurantTableController extends Controller
                 'success',
                 'Restaurant table deleted successfully.'
             );
+    }
+
+    private function accessibleBranches()
+    {
+        $allowedBranchIds = auth()->user()->allowedBranchIds();
+
+        return Branch::query()
+            ->where('is_active', true)
+            ->when($allowedBranchIds !== null, fn ($query) => $query->whereIn('id', $allowedBranchIds))
+            ->orderBy('name')
+            ->get();
+    }
+
+    private function ensureBranchAccess(int $branchId): void
+    {
+        abort_unless(auth()->user()->canAccessBranch($branchId), 403);
+    }
+
+    private function ensureTableAccess(RestaurantTable $table): void
+    {
+        $this->ensureBranchAccess((int) $table->branch_id);
     }
 }

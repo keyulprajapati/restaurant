@@ -66,7 +66,7 @@
 
             <div class="row g-2">
 
-                <div class="col-md-4">
+                <div class="col-md-3">
 
                     <input
                         type="text"
@@ -78,7 +78,18 @@
                 </div>
 
 
-                <div class="col-md-3">
+                <div class="col-md-2">
+
+                    <select name="branch_id" class="form-select">
+                        <option value="">All Accessible Branches</option>
+                        @foreach($branches as $branch)
+                            <option value="{{ $branch->id }}" @selected((string) request('branch_id') === (string) $branch->id)>{{ $branch->name }}</option>
+                        @endforeach
+                    </select>
+
+                </div>
+
+                <div class="col-md-2">
 
                     <input
                         type="date"
@@ -89,7 +100,7 @@
                 </div>
 
 
-                <div class="col-md-3">
+                <div class="col-md-2">
 
                     <select
                         name="status"
@@ -173,6 +184,8 @@
 
                     <th>Table</th>
 
+                    <th>Branch</th>
+
                     <th>Status</th>
 
                     <th class="text-end">
@@ -205,18 +218,13 @@
 
                         </td>
 
-
                         <td>
 
                             {{ $reservation->reservation_date->format('d M Y') }}
 
                         </td>
-
-
                         <td>
-
                             {{ \Carbon\Carbon::parse($reservation->reservation_time)->format('h:i A') }}
-
                         </td>
 
 
@@ -255,7 +263,12 @@
                             @endif
 
                         </td>
+                        <td>{{ $reservation->branch?->name ?? '-' }}</td>
 
+
+                            {{ \Carbon\Carbon::parse($reservation->reservation_time)->format('h:i A') }}
+
+                        </td>
 
                         <td>
 

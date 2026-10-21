@@ -175,6 +175,7 @@ class TableOrderController extends Controller
 
             // Create Order
             $order = Order::create([
+                'branch_id' => $table->branch_id,
                 'order_number' => $orderNumber,
                 'customer_id' => $customerId,
                 'restaurant_table_id' => $table->id,

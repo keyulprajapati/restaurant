@@ -204,6 +204,10 @@
             <div class="restaurant-brand">
                 {{ setting('site_name', 'Brahmani Lili Haldar') }}
             </div>
+
+            @if($table->branch)
+                <div class="small fw-semibold text-white">{{ $table->branch->name }}</div>
+            @endif
             <div class="table-pill-badge">
                 <i class="bi bi-qr-code me-1"></i> Contactless Dining
             </div>

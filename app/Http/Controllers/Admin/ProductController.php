@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -22,12 +23,22 @@ class ProductController extends Controller
 
     public function create()
     {
-        return view('admin.products.create');
+        $categories = Category::orderBy('name')->get();
+
+        return view(
+            'admin.products.create',
+            compact('categories')
+        );
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'category_id' => [
+                'nullable',
+                'exists:categories,id',
+            ],
+
             'name' => [
                 'required',
                 'string',
@@ -65,6 +76,7 @@ class ProductController extends Controller
         ]);
 
         Product::create([
+            'category_id' => $validated['category_id'] ?? null,
             'name' => $validated['name'],
             'price' => $validated['price'],
             'size' => $validated['size'] ?? null,
@@ -83,9 +95,11 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
+        $categories = Category::orderBy('name')->get();
+
         return view(
             'admin.products.edit',
-            compact('product')
+            compact('product', 'categories')
         );
     }
 
@@ -94,6 +108,11 @@ class ProductController extends Controller
         Product $product
     ) {
         $validated = $request->validate([
+            'category_id' => [
+                'nullable',
+                'exists:categories,id',
+            ],
+
             'name' => [
                 'required',
                 'string',
@@ -131,6 +150,7 @@ class ProductController extends Controller
         ]);
 
         $product->update([
+            'category_id' => $validated['category_id'] ?? null,
             'name' => $validated['name'],
             'price' => $validated['price'],
             'size' => $validated['size'] ?? null,
