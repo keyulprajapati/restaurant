@@ -116,6 +116,12 @@ class RolePermissionSeeder extends Seeder
             'taxes.create',
             'taxes.edit',
             'taxes.delete',
+
+            // Units
+            'units.view',
+            'units.create',
+            'units.edit',
+            'units.delete',
         ];
 
         foreach ($permissions as $permission) {
@@ -204,6 +210,11 @@ class RolePermissionSeeder extends Seeder
             'taxes.create',
             'taxes.edit',
             'taxes.delete',
+
+            'units.view',
+            'units.create',
+            'units.edit',
+            'units.delete',
         ]);
 
         /*

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Combo;
 use App\Models\Product;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -29,9 +30,11 @@ class ComboController extends Controller
             ->orderBy('name')
             ->get();
 
+        $units = Unit::active()->orderBy('name')->get();
+
         return view(
             'admin.combos.create',
-            compact('products')
+            compact('products', 'units')
         );
     }
 
@@ -69,11 +72,9 @@ class ComboController extends Controller
 
             'items.*.unit' => [
                 'required',
-                Rule::in([
-                    'kg',
-                    'gram',
-                    'pcs',
-                ]),
+                'string',
+                'max:50',
+                Rule::exists('units', 'short_code'),
             ],
 
             'items.*.quantity' => [
@@ -123,11 +124,14 @@ class ComboController extends Controller
             ->orderBy('name')
             ->get();
 
+        $units = Unit::active()->orderBy('name')->get();
+
         return view(
             'admin.combos.edit',
             compact(
                 'combo',
-                'products'
+                'products',
+                'units'
             )
         );
     }
@@ -168,11 +172,9 @@ class ComboController extends Controller
 
             'items.*.unit' => [
                 'required',
-                Rule::in([
-                    'kg',
-                    'gram',
-                    'pcs',
-                ]),
+                'string',
+                'max:50',
+                Rule::exists('units', 'short_code'),
             ],
 
             'items.*.quantity' => [

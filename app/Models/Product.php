@@ -43,7 +43,14 @@ class Product extends Model
             '.'
         );
 
-        return $size . ' ' . $this->unit;
+        $unitDisplay = $this->unitRelation?->name ?? $this->unit;
+
+        return $size . ' ' . $unitDisplay;
+    }
+
+    public function unitRelation()
+    {
+        return $this->belongsTo(Unit::class, 'unit', 'short_code');
     }
 
     public function comboItems()

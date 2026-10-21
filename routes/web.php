@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\TaxController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\TableOrderController;
 
 Route::get('/', function () {
@@ -555,6 +556,61 @@ Route::middleware(['auth'])
         )
             ->middleware('permission:taxes.delete')
             ->name('taxes.destroy');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Unit Management
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/units',
+            [UnitController::class, 'index']
+        )
+            ->middleware('permission:units.view')
+            ->name('units.index');
+
+        Route::get(
+            '/units/create',
+            [UnitController::class, 'create']
+        )
+            ->middleware('permission:units.create')
+            ->name('units.create');
+
+        Route::post(
+            '/units',
+            [UnitController::class, 'store']
+        )
+            ->middleware('permission:units.create')
+            ->name('units.store');
+
+        Route::get(
+            '/units/{unit}/edit',
+            [UnitController::class, 'edit']
+        )
+            ->middleware('permission:units.edit')
+            ->name('units.edit');
+
+        Route::put(
+            '/units/{unit}',
+            [UnitController::class, 'update']
+        )
+            ->middleware('permission:units.edit')
+            ->name('units.update');
+
+        Route::delete(
+            '/units/{unit}',
+            [UnitController::class, 'destroy']
+        )
+            ->middleware('permission:units.delete')
+            ->name('units.destroy');
+
+        Route::patch(
+            '/units/{unit}/toggle-status',
+            [UnitController::class, 'toggleStatus']
+        )
+            ->middleware('permission:units.edit')
+            ->name('units.toggle-status');
 
         /*
         |--------------------------------------------------------------------------

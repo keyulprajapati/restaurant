@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -12,7 +13,8 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::latest()
+        $products = Product::with('unitRelation')
+            ->latest()
             ->paginate(15);
 
         return view(
@@ -25,10 +27,9 @@ class ProductController extends Controller
     {
         $categories = Category::orderBy('name')->get();
 
-        return view(
-            'admin.products.create',
-            compact('categories')
-        );
+        $units = Unit::active()->orderBy('name')->get();
+
+        return view('admin.products.create', compact('units','categories'));
     }
 
     public function store(Request $request)
@@ -59,11 +60,9 @@ class ProductController extends Controller
 
             'unit' => [
                 'required',
-                Rule::in([
-                    'kg',
-                    'gram',
-                    'pcs',
-                ]),
+                'string',
+                'max:50',
+                Rule::exists('units', 'short_code')->where('is_active', true),
             ],
 
             'food_type' => [
@@ -97,9 +96,14 @@ class ProductController extends Controller
     {
         $categories = Category::orderBy('name')->get();
 
+        $units = Unit::where('is_active', true)
+            ->orWhere('short_code', $product->unit)
+            ->orderBy('name')
+            ->get();
+
         return view(
             'admin.products.edit',
-            compact('product', 'categories')
+            compact('product', 'units','categories')
         );
     }
 
@@ -133,11 +137,9 @@ class ProductController extends Controller
 
             'unit' => [
                 'required',
-                Rule::in([
-                    'kg',
-                    'gram',
-                    'pcs',
-                ]),
+                'string',
+                'max:50',
+                Rule::exists('units', 'short_code'),
             ],
 
             'food_type' => [

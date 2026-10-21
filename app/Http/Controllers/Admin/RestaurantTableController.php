@@ -144,7 +144,7 @@ class RestaurantTableController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
-        $prefix = trim($validated['prefix'] ?? 'T');
+        $prefix = isset($validated['prefix']) ? trim($validated['prefix']) : '';
         $startNumber = (int) $validated['start_number'];
         $count = (int) $validated['count'];
         $padZeros = (int) $validated['pad_zeros'];
@@ -432,13 +432,15 @@ class RestaurantTableController extends Controller
             $query->where('area', $request->area);
         }
 
+        $areas = RestaurantTable::whereNotNull('area')->distinct()->pluck('area');
+
         $tables = $query->orderBy('table_number')->get()->map(function ($table) {
             $table->order_url = $table->url;
-            $table->svg = QrCodeService::generateSvg($table->order_url, 200);
+            $table->svg = QrCodeService::generateSvg($table->order_url, 260);
             return $table;
         });
 
-        return view('admin.tables.print_all_qr', compact('tables'));
+        return view('admin.tables.print_all_qr', compact('tables', 'areas'));
     }
 
     public function destroy(RestaurantTable $table)

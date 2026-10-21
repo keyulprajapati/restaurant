@@ -46,15 +46,14 @@
 
                     <div class="row g-3 mb-4">
                         <div class="col-md-3">
-                            <label class="form-label fw-semibold">Table Prefix <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold">Table Prefix <span class="text-muted small">(Optional)</span></label>
                             <input type="text"
                                    name="prefix"
                                    id="inputPrefix"
                                    class="form-control"
-                                   value="{{ old('prefix', 'T') }}"
-                                   placeholder="e.g. T, Table-, A"
-                                   required>
-                            <small class="text-muted">e.g. T, Table-, OUT</small>
+                                   value="{{ old('prefix', '') }}"
+                                   placeholder="Leave empty for 01, 02">
+                            <small class="text-muted">e.g. Leave blank for 01, 02 or 1, 2</small>
                         </div>
 
                         <div class="col-md-3">
@@ -83,11 +82,11 @@
                         </div>
 
                         <div class="col-md-3">
-                            <label class="form-label fw-semibold">Zero Padding</label>
+                            <label class="form-label fw-semibold">Number Format</label>
                             <select name="pad_zeros" id="inputPadZeros" class="form-select">
-                                <option value="2" @selected(old('pad_zeros', '2') == '2')>2 Digits (T01, T02)</option>
-                                <option value="3" @selected(old('pad_zeros') == '3')>3 Digits (T001, T002)</option>
-                                <option value="0" @selected(old('pad_zeros') == '0')>No Padding (T1, T2)</option>
+                                <option value="2" @selected(old('pad_zeros', '2') == '2')>2 Digits (01, 02, 03)</option>
+                                <option value="0" @selected(old('pad_zeros') == '0')>No Leading Zeros (1, 2, 3)</option>
+                                <option value="3" @selected(old('pad_zeros') == '3')>3 Digits (001, 002, 003)</option>
                             </select>
                             <small class="text-muted">Format style</small>
                         </div>
@@ -231,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const previewPillsEl = document.getElementById('previewPills');
 
     function updatePreview() {
-        const prefix = prefixEl.value || 'T';
+        const prefix = prefixEl.value;
         const start = parseInt(startEl.value, 10) || 1;
         const count = Math.min(Math.max(parseInt(countEl.value, 10) || 1, 1), 50);
         const pad = parseInt(padZerosEl.value, 10) || 0;

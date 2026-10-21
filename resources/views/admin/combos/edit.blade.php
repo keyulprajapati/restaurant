@@ -234,23 +234,13 @@
                     name="items[{{ $index }}][unit]"
                     class="form-select">
 
-                    <option
-                        value="pcs"
-                        @selected($item->unit === 'pcs')>
-                        Pcs
-                    </option>
-
-                    <option
-                        value="gram"
-                        @selected($item->unit === 'gram')>
-                        Gram
-                    </option>
-
-                    <option
-                        value="kg"
-                        @selected($item->unit === 'kg')>
-                        KG
-                    </option>
+                    @foreach($units as $unit)
+                        <option
+                            value="{{ $unit->short_code }}"
+                            @selected($item->unit === $unit->short_code)>
+                            {{ $unit->name }}
+                        </option>
+                    @endforeach
 
                 </select>
 

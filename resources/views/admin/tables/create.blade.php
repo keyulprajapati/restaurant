@@ -68,7 +68,7 @@
                                 name="table_number"
                                 value="{{ old('table_number') }}"
                                 class="form-control"
-                                placeholder="e.g. T01"
+                                placeholder="e.g. 01, 02 or 12"
                                 required>
 
                             @error('table_number')

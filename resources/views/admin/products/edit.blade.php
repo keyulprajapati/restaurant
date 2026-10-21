@@ -126,21 +126,21 @@
 
                             <select
                                 name="unit"
-                                class="form-select">
+                                class="form-select @error('unit') is-invalid @enderror">
 
-                                <option value="pcs">
-                                    Pieces
-                                </option>
-
-                                <option value="gram">
-                                    Gram
-                                </option>
-
-                                <option value="kg">
-                                    KG
-                                </option>
+                                @foreach($units as $unit)
+                                    <option value="{{ $unit->short_code }}" @selected(old('unit', $product->unit) === $unit->short_code)>
+                                        {{ $unit->name }}
+                                    </option>
+                                @endforeach
 
                             </select>
+
+                            @error('unit')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
 
                         </div>
 
