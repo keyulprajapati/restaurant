@@ -475,6 +475,19 @@
 
             @endcan
 
+            @can('units.view')
+
+                <a href="{{ route('admin.units.index') }}" class="nav-link
+                            {{ request()->routeIs('admin.units.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-rulers"></i>
+
+                    Units
+
+                </a>
+
+            @endcan
+
 
             @can('combos.view')
 
