@@ -19,8 +19,16 @@ class TableOrderController extends Controller
      */
     public function showMenu($identifier)
     {
+        $cleanId = preg_replace('/^T-?\s*/i', '', $identifier);
+        $unpadded = ltrim($cleanId, '0');
+        $padded = str_pad($unpadded ?: '0', 2, '0', STR_PAD_LEFT);
+
         $table = RestaurantTable::where('table_number', $identifier)
             ->orWhere('id', $identifier)
+            ->orWhere('table_number', $cleanId)
+            ->orWhere('table_number', $padded)
+            ->orWhere('table_number', $unpadded)
+            ->orWhere('table_number', 'T' . $padded)
             ->first();
 
         if (!$table || !$table->is_active) {
@@ -68,8 +76,16 @@ class TableOrderController extends Controller
      */
     public function placeOrder(Request $request, $identifier)
     {
+        $cleanId = preg_replace('/^T-?\s*/i', '', $identifier);
+        $unpadded = ltrim($cleanId, '0');
+        $padded = str_pad($unpadded ?: '0', 2, '0', STR_PAD_LEFT);
+
         $table = RestaurantTable::where('table_number', $identifier)
             ->orWhere('id', $identifier)
+            ->orWhere('table_number', $cleanId)
+            ->orWhere('table_number', $padded)
+            ->orWhere('table_number', $unpadded)
+            ->orWhere('table_number', 'T' . $padded)
             ->firstOrFail();
 
         $validated = $request->validate([
