@@ -25,15 +25,24 @@
 
             </div>
 
-            <a
-                href="{{ route('admin.pos.index') }}"
-                class="btn btn-danger">
+            <div class="d-flex align-items-center gap-3">
 
-                <i class="bi bi-plus-lg me-2"></i>
+                <span class="badge text-bg-light border rounded-pill px-3 py-2">
+                    <i class="bi bi-arrow-repeat me-1"></i>
+                    Auto-refresh every 15s
+                </span>
 
-                New Order
+                <a
+                    href="{{ route('admin.pos.index') }}"
+                    class="btn btn-danger">
 
-            </a>
+                    <i class="bi bi-plus-lg me-2"></i>
+
+                    New Order
+
+                </a>
+
+            </div>
 
         </div>
 
@@ -44,7 +53,16 @@
             method="GET"
             class="row g-3 mb-4">
 
-            <div class="col-md-3">
+            <div class="col-md-2">
+                <select name="branch_id" class="form-select">
+                    <option value="">All Accessible Branches</option>
+                    @foreach($branches as $branch)
+                        <option value="{{ $branch->id }}" @selected((string) request('branch_id') === (string) $branch->id)>{{ $branch->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-2">
 
                 <select
                     name="status"
@@ -80,7 +98,7 @@
 
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-2">
 
                 <select
                     name="order_type"
@@ -119,7 +137,7 @@
             </div>
 
 
-            <div class="col-md-3">
+            <div class="col-md-2">
 
                 <select
                     name="restaurant_table_id"
@@ -146,7 +164,7 @@
             </div>
 
 
-            <div class="col-md-3 d-flex gap-2">
+            <div class="col-md-4 d-flex gap-2">
 
                 <button class="btn btn-dark flex-fill">
                     <i class="bi bi-search me-1"></i> Filter
@@ -170,6 +188,8 @@
                     <tr>
 
                         <th>Order</th>
+
+                        <th>Branch</th>
 
                         <th>Customer</th>
 
@@ -214,6 +234,8 @@
 
                             </td>
 
+                            <td>{{ $order->branch?->name ?? 'Unassigned' }}</td>
+
 
                             <td>
 
@@ -247,8 +269,8 @@
                             <td class="fw-bold">
 
                                 ₹{{ number_format(
-                                    $order->grand_total,
-                                    2
+                                    (float) $order->grand_total,
+                                    0
                                 ) }}
 
                             </td>
@@ -376,5 +398,21 @@
     </div>
 
 </div>
+
+@push('scripts')
+    <script>
+        const ORDER_REFRESH_INTERVAL_MS = 15000;
+
+        const orderRefreshTimer = setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                window.location.reload();
+            }
+        }, ORDER_REFRESH_INTERVAL_MS);
+
+        window.addEventListener('beforeunload', () => {
+            clearInterval(orderRefreshTimer);
+        });
+    </script>
+@endpush
 
 @endsection

@@ -357,6 +357,18 @@
                 @elseif(setting('brand_logo') && file_exists(public_path(setting('brand_logo'))))
                     <img class="brand-watermark" src="{{ asset(setting('brand_logo')) }}" alt="Watermark">
                 @endif
+                <div class="restaurant-brand">
+                    {{ setting('site_name', 'Brahmani Lili Haldar') }}
+                </div>
+                @if($table->branch)
+                    <div class="small fw-semibold">{{ $table->branch->name }}</div>
+                @endif
+                <div class="table-badge mt-2">
+                    TABLE {{ $table->table_number }}
+                </div>
+                <div class="table-area">
+                    {{ $table->area ?: 'Dine-In Dining' }} &bull; Seats {{ $table->capacity }}
+                </div>
 
                 <div class="card-inner">
                     <!-- 1. Scalloped Rosette Table Badge (16 outward smooth sinusoidal lobes) -->

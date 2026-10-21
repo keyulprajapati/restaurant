@@ -463,7 +463,7 @@
                             @endif
                         </div>
                         <div style="font-weight: 700;">
-                            &#8377;{{ number_format($item->total, 2) }}
+                            &#8377;{{ number_format((float) $item->total, 0) }}
                         </div>
                     </div>
                 @endforeach
@@ -479,17 +479,17 @@
             <div class="bill-summary">
                 <div class="bill-row">
                     <span>Subtotal</span>
-                    <span>&#8377;{{ number_format($order->subtotal, 2) }}</span>
+                    <span>&#8377;{{ number_format((float) $order->subtotal, 0) }}</span>
                 </div>
                 @if($order->tax > 0)
                     <div class="bill-row">
                         <span>Taxes &amp; Charges</span>
-                        <span>&#8377;{{ number_format($order->tax, 2) }}</span>
+                        <span>&#8377;{{ number_format((float) $order->tax, 0) }}</span>
                     </div>
                 @endif
                 <div class="bill-row total">
                     <span>Total Amount</span>
-                    <span style="color: var(--primary);">&#8377;{{ number_format($order->grand_total, 2) }}</span>
+                    <span style="color: var(--primary);">&#8377;{{ number_format((float) $order->grand_total, 0) }}</span>
                 </div>
             </div>
         </section>

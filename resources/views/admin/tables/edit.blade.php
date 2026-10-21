@@ -80,6 +80,22 @@
 
                         <div class="row g-3">
 
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">
+                                    Branch
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select name="branch_id" class="form-select @error('branch_id') is-invalid @enderror" required>
+                                    <option value="">Select Branch</option>
+                                    @foreach($branches as $branch)
+                                        <option value="{{ $branch->id }}" @selected(old('branch_id', $table->branch_id) == $branch->id)>{{ $branch->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('branch_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             {{-- Table Number --}}
 
                             <div class="col-md-6">

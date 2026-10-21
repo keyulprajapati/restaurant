@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\Order;
 use App\Models\RestaurantTable;
 use Illuminate\Http\Request;
@@ -12,12 +13,26 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
+        $user = auth()->user();
+        $allowedBranchIds = $user->allowedBranchIds();
+        $branches = Branch::query()
+            ->where('is_active', true)
+            ->when($allowedBranchIds !== null, fn ($query) => $query->whereIn('id', $allowedBranchIds))
+            ->orderBy('name')
+            ->get();
+
         $query = Order::with([
             'customer',
             'table',
             'items',
-            'kots'
-        ]);
+            'kots',
+            'branch',
+        ])->when($allowedBranchIds !== null, fn ($query) => $query->whereIn('branch_id', $allowedBranchIds));
+
+        if ($request->filled('branch_id')) {
+            $this->ensureBranchAccess((int) $request->branch_id);
+            $query->where('branch_id', $request->branch_id);
+        }
 
         if ($request->filled('status')) {
 
@@ -36,6 +51,8 @@ class OrderController extends Controller
         }
 
         if ($request->filled('restaurant_table_id')) {
+            $table = RestaurantTable::findOrFail($request->restaurant_table_id);
+            $this->ensureBranchAccess((int) $table->branch_id);
             $query->where(
                 'restaurant_table_id',
                 $request->restaurant_table_id
@@ -48,27 +65,46 @@ class OrderController extends Controller
             ->withQueryString();
 
         $tables = RestaurantTable::query()
+            ->when($allowedBranchIds !== null, fn ($query) => $query->whereIn('branch_id', $allowedBranchIds))
             ->orderBy('table_number')
             ->get();
 
         return view(
             'admin.orders.index',
-            compact('orders', 'tables')
+            compact('orders', 'tables', 'branches')
         );
     }
 
 
     public function show(Order $order)
     {
+        $this->ensureOrderAccess($order);
         $order->load([
             'customer',
             'table',
             'items.product',
             'kots.items',
+            'branch',
         ]);
 
         return view(
             'admin.orders.show',
+            compact('order')
+        );
+    }
+
+    public function receipt(Order $order)
+    {
+        $this->ensureOrderAccess($order);
+        $order->load([
+            'customer',
+            'table',
+            'items',
+            'branch',
+        ]);
+
+        return view(
+            'admin.orders.receipt',
             compact('order')
         );
     }
@@ -78,6 +114,8 @@ class OrderController extends Controller
         Request $request,
         Order $order
     ) {
+
+        $this->ensureOrderAccess($order);
 
         $request->validate([
             'status' => [
@@ -128,5 +166,20 @@ class OrderController extends Controller
             'success',
             'Order status updated successfully.'
         );
+    }
+
+    private function ensureOrderAccess(Order $order): void
+    {
+        $user = auth()->user();
+        $hasAccess = $order->branch_id
+            ? $user->canAccessBranch((int) $order->branch_id)
+            : $user->all_branches;
+
+        abort_unless($hasAccess, 403);
+    }
+
+    private function ensureBranchAccess(int $branchId): void
+    {
+        abort_unless(auth()->user()->canAccessBranch($branchId), 403);
     }
 }

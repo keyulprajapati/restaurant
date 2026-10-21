@@ -139,13 +139,15 @@
 
         .sidebar-brand {
 
-            height: 75px;
+            min-height: 88px;
 
             display: flex;
 
             align-items: center;
 
-            padding: 0 24px;
+            gap: 12px;
+
+            padding: 12px 18px;
 
             border-bottom:
                 1px solid rgba(255, 255, 255, .08);
@@ -154,8 +156,10 @@
 
         .brand-logo {
 
-            width: 40px;
-            height: 40px;
+            width: 56px;
+            height: 56px;
+
+            flex: 0 0 56px;
 
             border-radius: 12px;
 
@@ -168,6 +172,16 @@
 
             margin-right: 12px;
 
+        }
+
+        .sidebar-brand-name {
+            display: -webkit-box;
+            max-width: 145px;
+            overflow: hidden;
+            white-space: normal;
+            line-height: 1.15;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
         }
 
         .sidebar-menu {
@@ -364,9 +378,9 @@
 
             </div>
 
-            <div>
+            <div class="min-w-0">
 
-                <div class="fw-bold text-truncate" style="max-width: 150px;">
+                <div class="fw-bold sidebar-brand-name">
                     {{ setting('site_name', 'Restaurant') }}
                 </div>
 
@@ -514,6 +528,15 @@
                 </a>
 
             @endcan
+
+            <a href="{{ route('admin.branches.index') }}" class="nav-link
+                    {{ request()->routeIs('admin.branches.*') ? 'active' : '' }}">
+
+                <i class="bi bi-diagram-3"></i>
+
+                Branches
+
+            </a>
 
 
             @can('reservations.view')

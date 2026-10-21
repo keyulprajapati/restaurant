@@ -92,7 +92,7 @@
 
                         <td class="fw-semibold">
 
-                            ₹{{ number_format($combo->price, 2) }}
+                            ₹{{ number_format((float) $combo->price, 0) }}
 
                         </td>
 

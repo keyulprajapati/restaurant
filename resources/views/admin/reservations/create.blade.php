@@ -53,6 +53,17 @@
 
                         <div class="row g-3">
 
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Branch <span class="text-danger">*</span></label>
+                                <select name="branch_id" class="form-select" required>
+                                    <option value="">Select Branch</option>
+                                    @foreach($branches as $branch)
+                                        <option value="{{ $branch->id }}" @selected(old('branch_id', $selectedBranchId) == $branch->id)>{{ $branch->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('branch_id')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                            </div>
+
 
                             {{-- Customer --}}
 
@@ -222,7 +233,7 @@
 
                                     @foreach($tables as $table)
 
-                                        <option value="{{ $table->id }}" @selected(old('restaurant_table_id') == $table->id)>
+                                        <option value="{{ $table->id }}" data-branch-id="{{ $table->branch_id }}" @selected(old('restaurant_table_id') == $table->id)>
 
                                             {{ $table->table_number }}
 
@@ -496,6 +507,23 @@
                 .focus();
         }
 
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const branchSelect = document.querySelector('[name="branch_id"]');
+            const tableSelect = document.querySelector('[name="restaurant_table_id"]');
+            const filterTables = () => {
+                Array.from(tableSelect.options).forEach((option) => {
+                    if (option.value) {
+                        option.hidden = option.dataset.branchId !== branchSelect.value;
+                    }
+                });
+                if (tableSelect.selectedOptions[0]?.hidden) tableSelect.value = '';
+            };
+            branchSelect.addEventListener('change', filterTables);
+            filterTables();
+        });
     </script>
 
 @endpush

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Unit;
 use Illuminate\Http\Request;
@@ -24,14 +25,21 @@ class ProductController extends Controller
 
     public function create()
     {
+        $categories = Category::orderBy('name')->get();
+
         $units = Unit::active()->orderBy('name')->get();
 
-        return view('admin.products.create', compact('units'));
+        return view('admin.products.create', compact('units','categories'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'category_id' => [
+                'nullable',
+                'exists:categories,id',
+            ],
+
             'name' => [
                 'required',
                 'string',
@@ -67,6 +75,7 @@ class ProductController extends Controller
         ]);
 
         Product::create([
+            'category_id' => $validated['category_id'] ?? null,
             'name' => $validated['name'],
             'price' => $validated['price'],
             'size' => $validated['size'] ?? null,
@@ -85,6 +94,8 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
+        $categories = Category::orderBy('name')->get();
+
         $units = Unit::where('is_active', true)
             ->orWhere('short_code', $product->unit)
             ->orderBy('name')
@@ -92,7 +103,7 @@ class ProductController extends Controller
 
         return view(
             'admin.products.edit',
-            compact('product', 'units')
+            compact('product', 'units','categories')
         );
     }
 
@@ -101,6 +112,11 @@ class ProductController extends Controller
         Product $product
     ) {
         $validated = $request->validate([
+            'category_id' => [
+                'nullable',
+                'exists:categories,id',
+            ],
+
             'name' => [
                 'required',
                 'string',
@@ -136,6 +152,7 @@ class ProductController extends Controller
         ]);
 
         $product->update([
+            'category_id' => $validated['category_id'] ?? null,
             'name' => $validated['name'],
             'price' => $validated['price'],
             'size' => $validated['size'] ?? null,

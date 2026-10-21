@@ -11,6 +11,7 @@ class KotItem extends Model
         'order_item_id',
         'item_name',
         'size',
+        'unit',
         'quantity',
         'notes',
         'status',

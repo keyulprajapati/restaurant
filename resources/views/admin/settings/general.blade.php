@@ -174,13 +174,13 @@
                                     <div class="preview-container my-3 mx-auto rounded-3 d-flex align-items-center justify-content-center bg-white border shadow-sm p-2"
                                          style="width: 110px; height: 110px; overflow: hidden;">
                                         @if($settings['favicon_icon'])
-                                            <img id="faviconPreview" src="{{ asset($settings['favicon_icon']) }}" alt="Favicon" class="img-fluid max-h-100" style="max-height: 64px;">
+                                            <img id="faviconPreview" src="{{ asset($settings['favicon_icon']) }}" alt="Favicon" class="img-fluid max-h-100">
                                         @else
                                             <div id="faviconFallback" class="text-secondary text-center">
                                                 <i class="bi bi-browser-chrome fs-1 d-block text-primary"></i>
                                                 <span class="small text-muted">No Favicon</span>
                                             </div>
-                                            <img id="faviconPreview" src="" alt="Favicon" class="img-fluid max-h-100 d-none" style="max-height: 64px;">
+                                            <img id="faviconPreview" src="" alt="Favicon" class="img-fluid max-h-100 d-none">
                                         @endif
                                     </div>
                                     <small class="text-muted d-block mb-3">Appears in browser tabs and bookmarks bar. (.ICO, PNG, SVG. Max: 1MB)</small>

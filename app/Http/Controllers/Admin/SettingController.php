@@ -50,22 +50,49 @@ class SettingController extends Controller
         // Handle Brand Logo Upload
         if ($request->hasFile('brand_logo')) {
             $this->deleteOldFile('brand_logo');
-            $path = $request->file('brand_logo')->store('settings', 'public');
-            Setting::set('brand_logo', 'storage/' . $path);
+
+            $directory = public_path('settings');
+            if (!is_dir($directory)) {
+                mkdir($directory, 0777, true);
+            }
+
+            $file = $request->file('brand_logo');
+            $filename = 'brand_logo_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move($directory, $filename);
+
+            Setting::set('brand_logo', 'settings/' . $filename);
         }
 
         // Handle Favicon Icon Upload
         if ($request->hasFile('favicon_icon')) {
             $this->deleteOldFile('favicon_icon');
-            $path = $request->file('favicon_icon')->store('settings', 'public');
-            Setting::set('favicon_icon', 'storage/' . $path);
+
+            $directory = public_path('settings');
+            if (!is_dir($directory)) {
+                mkdir($directory, 0777, true);
+            }
+
+            $file = $request->file('favicon_icon');
+            $filename = 'favicon_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move($directory, $filename);
+
+            Setting::set('favicon_icon', 'settings/' . $filename);
         }
 
         // Handle Site Icon Upload
         if ($request->hasFile('site_icon')) {
             $this->deleteOldFile('site_icon');
-            $path = $request->file('site_icon')->store('settings', 'public');
-            Setting::set('site_icon', 'storage/' . $path);
+
+            $directory = public_path('settings');
+            if (!is_dir($directory)) {
+                mkdir($directory, 0777, true);
+            }
+
+            $file = $request->file('site_icon');
+            $filename = 'site_icon_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move($directory, $filename);
+
+            Setting::set('site_icon', 'settings/' . $filename);
         }
 
         return redirect()
@@ -122,10 +149,19 @@ class SettingController extends Controller
     protected function deleteOldFile(string $key): void
     {
         $oldPath = Setting::get($key);
+
         if ($oldPath && str_starts_with($oldPath, 'storage/')) {
             $relativePath = str_replace('storage/', '', $oldPath);
             if (Storage::disk('public')->exists($relativePath)) {
                 Storage::disk('public')->delete($relativePath);
+            }
+            return;
+        }
+
+        if ($oldPath && str_starts_with($oldPath, 'settings/')) {
+            $fullPath = public_path($oldPath);
+            if (file_exists($fullPath)) {
+                unlink($fullPath);
             }
         }
     }

@@ -116,6 +116,15 @@
                 </div>
 
                 <div class="col-md-3">
+                    <select name="branch_id" class="form-select">
+                        <option value="">All Branches</option>
+                        @foreach($branches as $branch)
+                            <option value="{{ $branch->id }}" @selected(request('branch_id') == $branch->id)>{{ $branch->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-2">
                     <select name="status" class="form-select">
                         <option value="">All Live Status</option>
                         <option value="available" @selected(request('status') === 'available')>Available</option>
@@ -154,6 +163,7 @@
                 <thead>
                     <tr>
                         <th>Table</th>
+                        <th>Branch</th>
                         <th>Capacity</th>
                         <th>Area</th>
                         <th>Type</th>
@@ -188,6 +198,14 @@
                                     @endif
                                 </div>
                             </div>
+                        </td>
+
+                        <td>
+                            @if($table->branch)
+                                <span class="badge bg-light text-dark border">{{ $table->branch->name }}</span>
+                            @else
+                                <span class="text-muted">Unassigned</span>
+                            @endif
                         </td>
 
                         <td>
@@ -235,14 +253,6 @@
 
                         <td class="text-end">
                             <div class="d-inline-flex gap-1">
-                                {{-- QR Code Modal Trigger --}}
-                                <button type="button"
-                                        class="btn btn-sm btn-outline-dark"
-                                        onclick="openQrModal('{{ $table->id }}', '{{ $table->table_number }}', '{{ $table->area ?: 'Dining Area' }}', '{{ $table->url }}')"
-                                        title="View Table QR Code">
-                                    <i class="bi bi-qr-code me-1"></i> QR
-                                </button>
-
                                 {{-- Direct Print QR --}}
                                 <a href="{{ route('admin.tables.print-qr', $table) }}"
                                    target="_blank"

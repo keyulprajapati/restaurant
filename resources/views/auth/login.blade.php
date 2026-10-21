@@ -20,13 +20,19 @@
 
     <style>
 
+        :root {
+            --login-primary: {{ setting('theme_primary_color', '#23422A') }};
+            --login-secondary: {{ setting('theme_secondary_color', '#C69A39') }};
+            --login-sidebar: {{ setting('theme_sidebar_color', '#111F15') }};
+        }
+
         body {
             min-height: 100vh;
             background:
                 linear-gradient(
                     135deg,
-                    rgba(15, 23, 42, .95),
-                    rgba(30, 41, 59, .92)
+                    color-mix(in srgb, var(--login-sidebar) 94%, transparent),
+                    color-mix(in srgb, var(--login-primary) 90%, transparent)
                 ),
                 url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4')
                 center / cover;
@@ -47,6 +53,7 @@
             border-radius: 24px;
             padding: 40px;
             box-shadow: 0 25px 70px rgba(0,0,0,.35);
+            border-top: 5px solid var(--login-secondary);
         }
 
         .brand-icon {
@@ -56,9 +63,19 @@
             align-items: center;
             justify-content: center;
             border-radius: 20px;
-            background: #dc3545;
+            background: var(--login-primary);
             color: #fff;
             font-size: 32px;
+            margin: 0 auto 20px;
+        }
+
+        .brand-logo {
+            display: block;
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: #fff;
             margin: 0 auto 20px;
         }
 
@@ -86,6 +103,14 @@
             border-radius: 12px;
             font-weight: 600;
             font-size: 16px;
+            background-color: var(--login-primary);
+            border-color: var(--login-primary);
+        }
+
+        .btn-login:hover,
+        .btn-login:focus {
+            background-color: var(--login-sidebar);
+            border-color: var(--login-sidebar);
         }
 
         .brand-title {
@@ -109,11 +134,16 @@
 
         <!-- Logo -->
 
-        <div class="brand-icon">
-
-            <i class="bi bi-shop"></i>
-
-        </div>
+        @if(setting('brand_logo'))
+            <img
+                class="brand-logo"
+                src="{{ asset(setting('brand_logo')) }}"
+                alt="{{ setting('site_name', 'Restaurant') }} logo">
+        @else
+            <div class="brand-icon">
+                <i class="bi bi-shop"></i>
+            </div>
+        @endif
 
 
         <!-- Heading -->
