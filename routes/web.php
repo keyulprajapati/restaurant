@@ -462,7 +462,7 @@ Route::middleware(['auth'])
             [OrderController::class, 'show']
         )->name('orders.show');
 
-        Route::get(
+        Route::post(
             'orders/{order}/receipt',
             [OrderController::class, 'receipt']
         )->name('orders.receipt');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
+use App\Models\Kot;
 use App\Models\Order;
 use App\Models\RestaurantTable;
 use Illuminate\Http\Request;
@@ -96,6 +97,35 @@ class OrderController extends Controller
     public function receipt(Order $order)
     {
         $this->ensureOrderAccess($order);
+
+        DB::transaction(function () use ($order) {
+            $order->update([
+                'status' => 'completed',
+            ]);
+
+            $order->kots()
+                ->where('status', '!=', 'cancelled')
+                ->get()
+                ->each(function (Kot $kot) {
+                    $kot->update([
+                        'status' => 'served',
+                        'served_at' => $kot->served_at ?? now(),
+                    ]);
+                    $kot->items()->update([
+                        'status' => 'served',
+                    ]);
+                });
+
+            if ($order->restaurant_table_id) {
+                RestaurantTable::where(
+                    'id',
+                    $order->restaurant_table_id
+                )->update([
+                    'status' => 'available',
+                ]);
+            }
+        });
+
         $order->load([
             'customer',
             'table',

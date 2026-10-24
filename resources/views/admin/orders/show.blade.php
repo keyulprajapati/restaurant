@@ -273,17 +273,19 @@
                 </div>
 
 
-                <div class="d-grid gap-2 mb-3">
-
-                    <a
-                        href="{{ route('admin.orders.receipt', $order) }}"
-                        target="_blank"
+                <form
+                    method="POST"
+                    action="{{ route('admin.orders.receipt', $order) }}"
+                    target="_blank"
+                    class="d-grid gap-2 mb-3">
+                    @csrf
+                    <button
+                        type="submit"
                         class="btn btn-outline-dark">
                         <i class="bi bi-receipt me-2"></i>
                         Print Invoice
-                    </a>
-
-                </div>
+                    </button>
+                </form>
 
                 <form
                     method="POST"
