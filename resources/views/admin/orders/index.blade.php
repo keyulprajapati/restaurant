@@ -197,6 +197,8 @@
 
                         <th>Type</th>
 
+                        <th>Payment</th>
+
                         <th>Amount</th>
 
                         <th>Status</th>
@@ -263,6 +265,11 @@
                                     )
                                 ) }}
 
+                            </td>
+
+
+                            <td>
+                                {{ $order->payment_method ? \Illuminate\Support\Str::upper($order->payment_method) : 'Not recorded' }}
                             </td>
 
 

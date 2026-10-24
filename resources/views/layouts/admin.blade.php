@@ -576,7 +576,8 @@
 
             @can('payments.view')
 
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.reports.payments') }}" class="nav-link
+                    {{ request()->routeIs('admin.reports.payments') ? 'active' : '' }}">
 
                     <i class="bi bi-credit-card"></i>
 
@@ -605,7 +606,8 @@
 
             @can('reports.view')
 
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.reports.sales') }}" class="nav-link
+                    {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
 
                     <i class="bi bi-bar-chart"></i>
 

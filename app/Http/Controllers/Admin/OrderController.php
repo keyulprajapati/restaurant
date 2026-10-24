@@ -198,6 +198,27 @@ class OrderController extends Controller
         );
     }
 
+    public function updatePaymentMethod(Request $request, Order $order)
+    {
+        $this->ensureOrderAccess($order);
+
+        $validated = $request->validate([
+            'payment_method' => [
+                'required',
+                'in:cash,upi,card,other',
+            ],
+        ]);
+
+        $order->update([
+            'payment_method' => $validated['payment_method'],
+        ]);
+
+        return back()->with(
+            'success',
+            'Payment method updated successfully.'
+        );
+    }
+
     private function ensureOrderAccess(Order $order): void
     {
         $user = auth()->user();

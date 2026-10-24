@@ -272,6 +272,32 @@
 
                 </div>
 
+                <div class="mb-3">
+                    <small class="text-muted">
+                        Payment Received Via
+                    </small>
+                    <form
+                        method="POST"
+                        action="{{ route('admin.orders.payment-method', $order) }}"
+                        class="mt-2">
+                        @csrf
+                        @method('PUT')
+                        <div class="input-group">
+                            <select name="payment_method" class="form-select" required>
+                                <option value="">Select method</option>
+                                <option value="cash" @selected($order->payment_method === 'cash')>Cash</option>
+                                <option value="upi" @selected($order->payment_method === 'upi')>UPI</option>
+                                <option value="card" @selected($order->payment_method === 'card')>Card</option>
+                                <option value="other" @selected($order->payment_method === 'other')>Other</option>
+                            </select>
+                            <button type="submit" class="btn btn-outline-dark">Save</button>
+                        </div>
+                        @error('payment_method')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                    </form>
+                </div>
+
 
                 <form
                     method="POST"

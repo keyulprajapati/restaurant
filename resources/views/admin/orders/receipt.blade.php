@@ -219,6 +219,11 @@
             <span>{{ $order->table?->table_number ?? '-' }}</span>
         </div>
 
+        <div class="row">
+            <span><strong>Payment</strong></span>
+            <span>{{ $order->payment_method ? \Illuminate\Support\Str::upper($order->payment_method) : 'Not recorded' }}</span>
+        </div>
+
         <div class="section">
             <table class="items">
                 <thead>

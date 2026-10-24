@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\PosController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\KotController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\TaxController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\BranchController;
@@ -471,6 +472,25 @@ Route::middleware(['auth'])
             'orders/{order}/status',
             [OrderController::class, 'updateStatus']
         )->name('orders.status');
+
+        Route::put(
+            'orders/{order}/payment-method',
+            [OrderController::class, 'updatePaymentMethod']
+        )->name('orders.payment-method');
+
+        Route::get(
+            'reports/sales',
+            [ReportController::class, 'sales']
+        )
+            ->middleware('permission:reports.view')
+            ->name('reports.sales');
+
+        Route::get(
+            'reports/payments',
+            [ReportController::class, 'payments']
+        )
+            ->middleware('permission:payments.view')
+            ->name('reports.payments');
 
 
         /*

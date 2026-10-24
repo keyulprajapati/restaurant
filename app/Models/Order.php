@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $fillable = [
+        'branch_id',
         'order_number',
         'customer_id',
         'restaurant_table_id',
@@ -17,6 +18,7 @@ class Order extends Model
         'discount',
         'tax',
         'grand_total',
+        'payment_method',
         'notes',
     ];
 
@@ -26,6 +28,11 @@ class Order extends Model
         'tax' => 'decimal:2',
         'grand_total' => 'decimal:2',
     ];
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 
     public function customer()
     {

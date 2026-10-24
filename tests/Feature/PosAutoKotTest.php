@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Kot;
+use App\Models\Branch;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -15,7 +16,13 @@ class PosAutoKotTest extends TestCase
 
     public function test_order_creation_also_creates_kot_for_kitchen(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'all_branches' => true,
+        ]);
+        $branch = Branch::create([
+            'name' => 'Test Branch',
+            'code' => 'TEST-POS',
+        ]);
 
         $product = Product::create([
             'name' => 'Burger',
@@ -27,6 +34,7 @@ class PosAutoKotTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)->post(route('admin.pos.store'), [
+            'branch_id' => $branch->id,
             'order_type' => 'takeaway',
             'items' => [
                 [
@@ -49,6 +57,7 @@ class PosAutoKotTest extends TestCase
         ]);
 
         $this->assertSame('preparing', $order->fresh()->status);
+        $this->assertNull($order->fresh()->payment_method);
         $this->assertCount(1, $order->kots);
         $this->assertSame(2, (int) $order->kots()->first()->items()->first()->quantity);
     }

@@ -9,6 +9,7 @@ class RestaurantTable extends Model
     protected $table = 'restaurant_tables';
 
     protected $fillable = [
+        'branch_id',
         'table_number',
         'name',
         'capacity',
@@ -56,6 +57,11 @@ class RestaurantTable extends Model
             'private' => 'Private',
             default => ucfirst($this->table_type),
         };
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function reservations()

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Combo;
 use App\Models\ComboItem;
+use App\Models\Branch;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -16,7 +17,13 @@ class PosComboOrderTest extends TestCase
 
     public function test_combo_items_can_be_added_to_a_pos_order(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'all_branches' => true,
+        ]);
+        $branch = Branch::create([
+            'name' => 'Test Branch',
+            'code' => 'TEST-COMBO',
+        ]);
 
         $product = Product::create([
             'name' => 'Burger',
@@ -40,6 +47,7 @@ class PosComboOrderTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)->post(route('admin.pos.store'), [
+            'branch_id' => $branch->id,
             'order_type' => 'takeaway',
             'customer_id' => 'walk_in',
             'items' => [

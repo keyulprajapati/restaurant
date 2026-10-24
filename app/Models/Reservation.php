@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Reservation extends Model
 {
     protected $fillable = [
+    'branch_id',
     'restaurant_table_id',
     'customer_id',
     'reservation_date',
@@ -38,6 +39,11 @@ class Reservation extends Model
             RestaurantTable::class,
             'restaurant_table_id'
         );
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function getDateTimeAttribute()
