@@ -234,11 +234,14 @@
                             <td>
                                 <span class="item-name">{{ $item->item_name }}</span>
                                 @if($item->size)
-                                    <span class="item-note">{{ rtrim(rtrim(number_format((float) $item->size, 3, '.', ''), '0'), '.') }}</span>
+                                    <span class="item-note">
+                                        {{ rtrim(rtrim(number_format((float) $item->size, 3, '.', ''), '0'), '.') }}
+                                        @if($item->unit)
+                                            {{ $item->unit }}
+                                        @endif    
+                                    </span>
                                 @endif
-                                @if($item->unit)
-                                    <span class="item-note">{{ $item->unit }}</span>
-                                @endif
+                                
                             </td>
                             <td>{{ $item->quantity }}</td>
                             <td>₹{{ number_format((float) $item->total, 2) }}</td>

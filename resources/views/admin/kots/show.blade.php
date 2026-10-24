@@ -136,13 +136,12 @@
                                             {{ $item->item_name }}
 
                                         </strong>
-
                                         @if($item->size)
 
                                             <small
                                                 class="text-muted d-block">
 
-                                                {{ $item->size }}
+                                                {{ $item->size }} {{ $item->unit }}
 
                                             </small>
 

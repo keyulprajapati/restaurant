@@ -178,7 +178,7 @@
 
                         <div class="note">
 
-                            {{ $item->size }}
+                            {{ $item->size }} {{ $item->unit }}
 
                         </div>
 
