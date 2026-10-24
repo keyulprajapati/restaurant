@@ -417,6 +417,29 @@
 
             @endcan
 
+            @can('pos.view')
+
+                <a href="{{ route('admin.pos.index') }}" class="nav-link">
+
+                    <i class="bi bi-display"></i>
+
+                    POS
+
+                </a>
+
+            @endcan
+
+            @can('kitchen.view')
+
+                <a href="{{ route('admin.kots.index') }}" class="nav-link">
+
+                    <i class="bi bi-fire"></i>
+
+                    Kitchen
+
+                </a>
+
+            @endcan
 
             @can('orders.view')
 
@@ -430,31 +453,7 @@
 
             @endcan
 
-
-            @can('pos.view')
-
-                <a href="{{ route('admin.pos.index') }}" class="nav-link">
-
-                    <i class="bi bi-display"></i>
-
-                    POS
-
-                </a>
-
-            @endcan
-
-
-            @can('kitchen.view')
-
-                <a href="{{ route('admin.kots.index') }}" class="nav-link">
-
-                    <i class="bi bi-fire"></i>
-
-                    Kitchen
-
-                </a>
-
-            @endcan
+            
 
 
             <div class="menu-title mt-3">
