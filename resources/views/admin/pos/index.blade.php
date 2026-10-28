@@ -42,6 +42,18 @@
 
         @csrf
 
+        @if($openOrder)
+            <input type="hidden" name="existing_order_id" value="{{ $openOrder->id }}">
+            <input type="hidden" name="order_type" value="dine_in">
+            <div class="alert alert-info d-flex align-items-center gap-2 mb-4">
+                <i class="bi bi-info-circle"></i>
+                <span>
+                    Updating open order <strong>{{ $openOrder->order_number }}</strong>.
+                    Changes will be saved to this order.
+                </span>
+            </div>
+        @endif
+
 
         <div class="row g-4">
 
@@ -85,17 +97,18 @@
                                     name="order_type"
                                     id="order_type"
                                     class="form-select"
+                                    @disabled($openOrder)
                                     required>
 
-                                    <option value="dine_in">
+                                    <option value="dine_in" @selected($selectedOrderType === 'dine_in')>
                                         Dine In
                                     </option>
 
-                                    <option value="takeaway">
+                                    <option value="takeaway" @selected($selectedOrderType === 'takeaway')>
                                         Takeaway
                                     </option>
 
-                                    <option value="delivery">
+                                    <option value="delivery" @selected($selectedOrderType === 'delivery')>
                                         Delivery
                                     </option>
 
@@ -121,6 +134,12 @@
                                     <option value="walk_in">
                                         Walk-In Customer
                                     </option>
+
+                                    @if($openOrder?->customer && !$openOrder->customer->is_active)
+                                        <option value="{{ $openOrder->customer->id }}" selected>
+                                            {{ $openOrder->customer->name }}
+                                        </option>
+                                    @endif
 
                                     @foreach(
                                         \App\Models\Customer::where(
@@ -167,7 +186,7 @@
 
                                     @foreach($tables as $table)
 
-                                        <option value="{{ $table->id }}">
+                                        <option value="{{ $table->id }}" @selected((string) $selectedTableId === (string) $table->id)>
 
                                             {{ $table->table_number }}
 
@@ -485,6 +504,7 @@
 
                             <textarea
                                 name="notes"
+                                id="order_notes"
                                 class="form-control"
                                 rows="2"
                                 placeholder="Special instructions..."></textarea>
@@ -568,7 +588,7 @@
 
                             <i class="bi bi-check2-circle me-2"></i>
 
-                            Place Order
+                            {{ $openOrder ? 'Update Order' : 'Place Order' }}
 
                         </button>
 
@@ -617,6 +637,8 @@ document.addEventListener(
             document.getElementById('grandTotal');
 
         const activeTaxes = @json($taxes ?? []);
+        const existingOrder = @json($existingOrderData);
+        const existingOrderItems = @json($existingOrderItems);
 
         const discountInput =
             document.getElementById('discount');
@@ -862,6 +884,13 @@ document.addEventListener(
                         type="hidden"
                         name="items[${item.key}][quantity]"
                         value="${item.quantity}">
+
+                    ${item.order_item_id ? `
+                        <input
+                            type="hidden"
+                            name="items[${item.key}][order_item_id]"
+                            value="${item.order_item_id}">
+                    ` : ''}
 
                 `;
 
@@ -1213,6 +1242,49 @@ document.addEventListener(
                     '&#039;'
                 );
         }
+
+        if (existingOrder) {
+            document.getElementById('order_type').value = 'dine_in';
+            document.getElementById('customer_id').value = existingOrder.customer_id;
+            document.getElementById('table_id').value = @json((string) $selectedTableId);
+            document.getElementById('order_notes').value = existingOrder.notes || '';
+            discountInput.value = existingOrder.discount_percent.toFixed(2);
+
+            existingOrderItems.forEach(function (item) {
+                const key = `order:${item.order_item_id}`;
+                cart[key] = {
+                    ...item,
+                    key: key,
+                };
+            });
+        }
+
+        const orderTypeSelect = document.getElementById('order_type');
+        const tableContainer = document.getElementById('tableContainer');
+        if (orderTypeSelect.value === 'dine_in') {
+            tableContainer.style.display = '';
+            document.getElementById('table_id').setAttribute('required', 'required');
+        } else {
+            tableContainer.style.display = 'none';
+            document.getElementById('table_id').removeAttribute('required');
+        }
+
+        document.getElementById('table_id').addEventListener('change', function () {
+            const url = new URL(window.location.href);
+            const branchId = document.getElementById('branch_id').value;
+            if (branchId) {
+                url.searchParams.set('branch_id', branchId);
+            }
+            url.searchParams.set('order_type', 'dine_in');
+            if (this.value) {
+                url.searchParams.set('restaurant_table_id', this.value);
+            } else {
+                url.searchParams.delete('restaurant_table_id');
+            }
+            window.location.href = url.toString();
+        });
+
+        renderCart();
 
     }
 );

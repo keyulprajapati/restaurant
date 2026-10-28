@@ -6,6 +6,7 @@
     <title>Invoice - {{ $order->order_number }}</title>
     <style>
         @page {
+            size: 80mm auto;
             margin: 0;
         }
 
@@ -149,6 +150,15 @@
         }
 
         @media print {
+            * {
+                box-sizing: border-box;
+            }
+
+            @page {
+                size: 80mm auto;
+                margin: 0;
+            }
+
             html, body {
                 width: 80mm;
                 height: auto;
@@ -163,12 +173,12 @@
             }
 
             .receipt {
-                width: 80mm;
+                width: 72mm;
                 max-width: none;
                 margin: 0;
                 border: none;
                 border-radius: 0;
-                padding: 3mm;
+                padding: 2mm;
                 box-shadow: none;
                 background: #ffffff;
             }
@@ -177,6 +187,81 @@
                 background: none;
                 border-radius: 0;
                 break-inside: avoid;
+            }
+
+            .company {
+                font-size: 18px;
+                overflow-wrap: anywhere;
+            }
+
+            .row {
+                align-items: flex-start;
+                gap: 2mm;
+                font-size: 11px;
+            }
+
+            .row span:last-child {
+                min-width: 0;
+                max-width: 68%;
+                text-align: right;
+                overflow-wrap: anywhere;
+            }
+
+            .items {
+                width: 100%;
+                table-layout: fixed;
+                font-size: 10px;
+            }
+
+            .items th,
+            .items td {
+                padding: 5px 1px;
+                overflow-wrap: anywhere;
+            }
+
+            .items th:nth-child(1),
+            .items td:nth-child(1) {
+                width: 58%;
+            }
+
+            .items th:nth-child(2),
+            .items td:nth-child(2) {
+                width: 15%;
+            }
+
+            .items th:nth-child(3),
+            .items td:nth-child(3) {
+                width: 27%;
+                white-space: nowrap;
+                font-size: 9px;
+            }
+
+            .items th {
+                font-size: 9px;
+                letter-spacing: 0;
+            }
+
+            .total-box {
+                padding: 2mm;
+                font-size: 11px;
+            }
+
+            .total-row {
+                gap: 2mm;
+            }
+
+            .total-row span:last-child {
+                text-align: right;
+                white-space: nowrap;
+            }
+
+            .grand {
+                font-size: 14px;
+            }
+
+            .footer {
+                font-size: 10px;
+                overflow-wrap: anywhere;
             }
 
             .items tr,
