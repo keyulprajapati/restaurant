@@ -84,6 +84,41 @@ class PosOpenOrderTest extends TestCase
             ->assertDontSee('South Product');
     }
 
+    public function test_pos_displays_products_in_sequence_number_order(): void
+    {
+        $user = User::factory()->create([
+            'all_branches' => true,
+        ]);
+        $branch = Branch::create([
+            'name' => 'Sequence Branch',
+            'code' => 'POS-SEQUENCE',
+        ]);
+
+        Product::create([
+            'branch_id' => $branch->id,
+            'name' => 'Second Product',
+            'sequence_number' => 20,
+            'price' => 100,
+            'unit' => 'pcs',
+            'food_type' => 'general',
+            'is_active' => true,
+        ]);
+        Product::create([
+            'branch_id' => $branch->id,
+            'name' => 'First Product',
+            'sequence_number' => 10,
+            'price' => 100,
+            'unit' => 'pcs',
+            'food_type' => 'general',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('admin.pos.index', ['branch_id' => $branch->id]))
+            ->assertOk()
+            ->assertSeeInOrder(['First Product', 'Second Product']);
+    }
+
     public function test_submitting_pos_updates_the_open_order_and_sends_only_added_quantity_to_kitchen(): void
     {
         $user = User::factory()->create([

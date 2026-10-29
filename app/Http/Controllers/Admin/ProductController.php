@@ -67,6 +67,13 @@ class ProductController extends Controller
                 'max:150',
             ],
 
+            'sequence_number' => [
+                'required',
+                'integer',
+                'min:1',
+                'max:65535',
+            ],
+
             'image' => [
                 'nullable',
                 'image',
@@ -114,6 +121,7 @@ class ProductController extends Controller
             'branch_id' => $validated['branch_id'],
             'category_id' => $validated['category_id'] ?? null,
             'name' => $validated['name'],
+            'sequence_number' => $validated['sequence_number'],
             'image_path' => $imagePath,
             'price' => $validated['price'],
             'size' => $validated['size'] ?? null,
@@ -180,6 +188,13 @@ class ProductController extends Controller
                 'max:150',
             ],
 
+            'sequence_number' => [
+                'required',
+                'integer',
+                'min:1',
+                'max:65535',
+            ],
+
             'image' => [
                 'nullable',
                 'image',
@@ -238,6 +253,7 @@ class ProductController extends Controller
             'branch_id' => $validated['branch_id'],
             'category_id' => $validated['category_id'] ?? null,
             'name' => $validated['name'],
+            'sequence_number' => $validated['sequence_number'],
             'image_path' => $imagePath,
             'price' => $validated['price'],
             'size' => $validated['size'] ?? null,

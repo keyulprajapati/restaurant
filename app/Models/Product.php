@@ -11,6 +11,7 @@ class Product extends Model
         'category_id',
         'name',
         'image_path',
+        'sequence_number',
         'price',
         'size',
         'unit',
@@ -21,6 +22,7 @@ class Product extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'size' => 'decimal:3',
+        'sequence_number' => 'integer',
         'is_active' => 'boolean',
     ];
 

@@ -98,6 +98,25 @@
 
                         </div>
 
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" for="sequence_number">
+                                Sequence Number
+                            </label>
+                            <input
+                                type="number"
+                                name="sequence_number"
+                                id="sequence_number"
+                                value="{{ old('sequence_number', $product->sequence_number) }}"
+                                min="1"
+                                max="65535"
+                                class="form-control @error('sequence_number') is-invalid @enderror"
+                                required>
+                            <div class="form-text">Products with lower numbers appear first in POS.</div>
+                            @error('sequence_number')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="col-12">
                             <label class="form-label fw-semibold" for="image">
                                 Product Image

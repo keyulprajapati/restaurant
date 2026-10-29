@@ -87,6 +87,7 @@
 
                     <th>Product</th>
                     <th>Branch</th>
+                    <th>Sequence</th>
                     <th>Price</th>
                     <th>Size</th>
                     <th>Food Type</th>
@@ -121,6 +122,8 @@
                         </td>
 
                         <td>{{ $product->branch?->name ?? 'All branches (legacy)' }}</td>
+
+                        <td>{{ $product->sequence_number }}</td>
 
                         <td class="fw-semibold">
 

@@ -47,10 +47,10 @@ class PosController extends Controller
                     $query->orWhere('branch_id', $selectedBranchId);
                 }
             })
+            ->orderBy('sequence_number')
             ->orderBy('name')
             ->get()
-            ->groupBy(fn (Product $product) => $product->category?->name ?? 'Uncategorized')
-            ->sortKeys();
+            ->groupBy(fn (Product $product) => $product->category?->name ?? 'Uncategorized');
 
         $tables = RestaurantTable::query()
             ->when($selectedBranchId, fn ($query) => $query->where('branch_id', $selectedBranchId))
