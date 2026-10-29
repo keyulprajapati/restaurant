@@ -31,6 +31,8 @@ Route::get('/', function () {
 | Public Customer Table Ordering (QR Scan)
 |--------------------------------------------------------------------------
 */
+Route::get('/table/id/{table}', [TableOrderController::class, 'showMenuById'])->name('table.menu.by-id');
+Route::post('/table/id/{table}/order', [TableOrderController::class, 'placeOrderById'])->name('table.order.store.by-id');
 Route::get('/table/{table}', [TableOrderController::class, 'showMenu'])->name('table.menu');
 Route::post('/table/{table}/order', [TableOrderController::class, 'placeOrder'])->name('table.order.store');
 Route::get('/table/order/{order_number}', [TableOrderController::class, 'trackOrder'])->name('table.order.track');
@@ -43,7 +45,6 @@ Route::middleware(['auth'])
     ->group(function () {
 
         Route::get('/dashboard', [DashboardController::class, 'index'])
-            ->middleware('permission:dashboard.view')
             ->name('dashboard');
         /*
         |--------------------------------------------------------------------------

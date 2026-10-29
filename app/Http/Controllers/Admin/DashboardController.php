@@ -15,6 +15,10 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+        if (!$user->can('dashboard.view')) {
+            return redirect()->route('admin.pos.index');
+        }
+
         $allowedBranchIds = $user->allowedBranchIds();
         $branches = Branch::query()
             ->where('is_active', true)

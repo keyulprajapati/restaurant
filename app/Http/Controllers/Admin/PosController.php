@@ -41,6 +41,12 @@ class PosController extends Controller
         $menuItems = Product::query()
             ->with('category')
             ->where('is_active', true)
+            ->where(function ($query) use ($selectedBranchId) {
+                $query->whereNull('branch_id');
+                if ($selectedBranchId) {
+                    $query->orWhere('branch_id', $selectedBranchId);
+                }
+            })
             ->orderBy('name')
             ->get()
             ->groupBy(fn (Product $product) => $product->category?->name ?? 'Uncategorized')
@@ -108,6 +114,12 @@ class PosController extends Controller
 
         $combos = Combo::query()
             ->where('is_active', true)
+            ->whereDoesntHave('items.product', function ($query) use ($selectedBranchId) {
+                $query->whereNotNull('branch_id');
+                if ($selectedBranchId) {
+                    $query->where('branch_id', '!=', $selectedBranchId);
+                }
+            })
             ->with(['items.product'])
             ->get();
 
@@ -281,7 +293,12 @@ class PosController extends Controller
                         abort(422, 'An order item does not belong to the selected open order.');
                     }
 
-                    $comboQuery = Combo::query()->whereKey($comboId);
+                    $comboQuery = Combo::query()
+                        ->whereKey($comboId)
+                        ->whereDoesntHave('items.product', function ($query) use ($validated) {
+                            $query->whereNotNull('branch_id')
+                                ->where('branch_id', '!=', $validated['branch_id']);
+                        });
                     if (!$existingOrderItem) {
                         $comboQuery->where('is_active', true);
                     }
@@ -329,6 +346,10 @@ class PosController extends Controller
                 }
 
                 $productQuery = Product::query()->whereKey($productId);
+                $productQuery->where(function ($query) use ($validated) {
+                    $query->whereNull('branch_id')
+                        ->orWhere('branch_id', $validated['branch_id']);
+                });
                 if (!$existingOrderItem) {
                     $productQuery->where('is_active', true);
                 }

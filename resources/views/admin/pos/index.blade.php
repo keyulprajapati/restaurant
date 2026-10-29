@@ -277,7 +277,15 @@
                                                justify-content-center mb-3"
                                         style="height:70px;">
 
-                                        <i class="bi bi-egg-fried fs-2"></i>
+                                        @if($item->image_path)
+                                            <img
+                                                src="{{ asset('storage/' . $item->image_path) }}"
+                                                alt="{{ $item->name }}"
+                                                class="w-100 h-100 rounded-3"
+                                                style="object-fit: cover;">
+                                        @else
+                                            <i class="bi bi-egg-fried fs-2"></i>
+                                        @endif
 
                                     </div>
 

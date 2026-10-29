@@ -79,8 +79,8 @@ class BranchController extends Controller
 
     public function destroy(Branch $branch)
     {
-        if ($branch->tables()->exists() || $branch->orders()->exists()) {
-            return back()->with('error', 'This branch cannot be deleted because it has linked tables or orders.');
+        if ($branch->tables()->exists() || $branch->orders()->exists() || $branch->products()->exists()) {
+            return back()->with('error', 'This branch cannot be deleted because it has linked tables, orders, or products.');
         }
 
         $branch->delete();

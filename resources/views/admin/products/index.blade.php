@@ -86,6 +86,7 @@
                 <tr>
 
                     <th>Product</th>
+                    <th>Branch</th>
                     <th>Price</th>
                     <th>Size</th>
                     <th>Food Type</th>
@@ -104,11 +105,22 @@
 
                         <td>
 
-                            <div class="fw-semibold">
-                                {{ $product->name }}
+                            <div class="d-flex align-items-center gap-2">
+                                @if($product->image_path)
+                                    <img
+                                        src="{{ asset('storage/' . $product->image_path) }}"
+                                        alt="{{ $product->name }}"
+                                        class="rounded-2"
+                                        style="width: 48px; height: 48px; object-fit: cover;">
+                                @endif
+                                <div class="fw-semibold">
+                                    {{ $product->name }}
+                                </div>
                             </div>
 
                         </td>
+
+                        <td>{{ $product->branch?->name ?? 'All branches (legacy)' }}</td>
 
                         <td class="fw-semibold">
 
@@ -220,7 +232,7 @@
 
                     <tr>
 
-                        <td colspan="6"
+                        <td colspan="7"
                             class="text-center py-5">
 
                             <i class="bi bi-basket fs-1 text-muted"></i>

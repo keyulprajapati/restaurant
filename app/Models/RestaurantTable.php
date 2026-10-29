@@ -93,7 +93,7 @@ class RestaurantTable extends Model
         $configuredBase = function_exists('setting') ? setting('qr_base_url') : null;
         if (!empty($configuredBase)) {
             $base = rtrim($configuredBase, '/');
-            return $base . '/table/' . $this->table_number;
+            return $base . '/table/id/' . $this->id;
         }
 
         // 2. If running via HTTP request, resolve the accessible network root URL
@@ -105,11 +105,11 @@ class RestaurantTable extends Model
                     $root = str_replace(['localhost', '127.0.0.1'], $hostIp, $root);
                 }
             }
-            return rtrim($root, '/') . '/table/' . $this->table_number;
+            return rtrim($root, '/') . '/table/id/' . $this->id;
         }
 
         // 3. Fallback to url()
-        $url = url('/table/' . $this->table_number);
+        $url = url('/table/id/' . $this->id);
         if (str_contains($url, 'localhost') || str_contains($url, '127.0.0.1')) {
             $hostIp = gethostbyname(gethostname());
             if (!empty($hostIp) && $hostIp !== '127.0.0.1') {

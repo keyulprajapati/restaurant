@@ -656,6 +656,13 @@
                      data-display-name="{{ $product->name }}"
                      data-price="{{ $product->price }}"
                      data-foodtype="{{ $product->food_type }}">
+                    @if($product->image_path)
+                        <img
+                            src="{{ asset('storage/' . $product->image_path) }}"
+                            alt="{{ $product->name }}"
+                            loading="lazy"
+                            style="width: 64px; height: 64px; flex: 0 0 64px; object-fit: cover; border-radius: 12px; margin-right: 12px;">
+                    @endif
                     <div class="dish-info">
                         <div class="dish-title">
                             <span class="type-dot {{ $product->food_type }}"></span>

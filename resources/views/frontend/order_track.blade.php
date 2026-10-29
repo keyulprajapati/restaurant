@@ -496,7 +496,7 @@
 
         <!-- Action Navigation -->
         <div class="actions-group">
-            <a href="{{ route('table.menu', $order->table?->table_number ?? '01') }}" class="btn-action primary">
+            <a href="{{ $order->table?->url ?? route('table.menu', '01') }}" class="btn-action primary">
                 <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Order More Items for Table #{{ $order->table?->table_number }}
             </a>

@@ -162,7 +162,9 @@ class RestaurantTableController extends Controller
                 $formattedNum = $padZeros > 0 ? str_pad($num, $padZeros, '0', STR_PAD_LEFT) : (string) $num;
                 $tableNumber = $prefix . $formattedNum;
 
-                if (RestaurantTable::where('table_number', $tableNumber)->exists()) {
+                if (RestaurantTable::where('branch_id', $validated['branch_id'])
+                    ->where('table_number', $tableNumber)
+                    ->exists()) {
                     $skippedTables[] = $tableNumber;
                     continue;
                 }
@@ -210,7 +212,8 @@ class RestaurantTableController extends Controller
                 'required',
                 'string',
                 'max:50',
-                'unique:restaurant_tables,table_number',
+                Rule::unique('restaurant_tables', 'table_number')
+                    ->where('branch_id', $request->input('branch_id')),
             ],
 
             'name' => [
@@ -302,10 +305,9 @@ class RestaurantTableController extends Controller
                 'required',
                 'string',
                 'max:50',
-                Rule::unique(
-                    'restaurant_tables',
-                    'table_number'
-                )->ignore($table->id),
+                Rule::unique('restaurant_tables', 'table_number')
+                    ->where('branch_id', $request->input('branch_id'))
+                    ->ignore($table->id),
             ],
 
             'name' => [
@@ -378,7 +380,7 @@ class RestaurantTableController extends Controller
         $this->ensureTableAccess($table);
         $customBase = $request->query('base_url');
         if (!empty($customBase)) {
-            $url = rtrim($customBase, '/') . '/table/' . $table->table_number;
+            $url = rtrim($customBase, '/') . '/table/id/' . $table->id;
         } else {
             $url = $table->url;
         }

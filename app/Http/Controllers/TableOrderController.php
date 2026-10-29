@@ -38,14 +38,38 @@ class TableOrderController extends Controller
             ]);
         }
 
+        return $this->renderMenu($table);
+    }
+
+    public function showMenuById(RestaurantTable $table)
+    {
+        if (!$table->is_active) {
+            return view('frontend.table_not_found', [
+                'identifier' => $table->id,
+            ]);
+        }
+
+        return $this->renderMenu($table);
+    }
+
+    private function renderMenu(RestaurantTable $table)
+    {
         // Active products
         $products = Product::where('is_active', true)
+            ->where(function ($query) use ($table) {
+                $query->whereNull('branch_id')
+                    ->orWhere('branch_id', $table->branch_id);
+            })
             ->orderBy('food_type')
             ->orderBy('name')
             ->get();
 
         // Active combos
         $combos = Combo::where('is_active', true)
+            ->whereDoesntHave('items.product', function ($query) use ($table) {
+                $query->whereNotNull('branch_id')
+                    ->where('branch_id', '!=', $table->branch_id);
+            })
             ->with(['items.product'])
             ->get();
 
@@ -89,6 +113,16 @@ class TableOrderController extends Controller
             ->orWhere('table_number', 'T' . $padded)
             ->firstOrFail();
 
+        return $this->placeOrderForTable($request, $table);
+    }
+
+    public function placeOrderById(Request $request, RestaurantTable $table)
+    {
+        return $this->placeOrderForTable($request, $table);
+    }
+
+    private function placeOrderForTable(Request $request, RestaurantTable $table)
+    {
         $validated = $request->validate([
             'items' => ['required', 'array', 'min:1'],
             'items.*.id' => ['required'],
@@ -133,7 +167,12 @@ class TableOrderController extends Controller
                 $qty = (float) $itemInput['quantity'];
 
                 if ($isCombo) {
-                    $combo = Combo::where('is_active', true)->findOrFail($itemInput['id']);
+                    $combo = Combo::where('is_active', true)
+                        ->whereDoesntHave('items.product', function ($query) use ($table) {
+                            $query->whereNotNull('branch_id')
+                                ->where('branch_id', '!=', $table->branch_id);
+                        })
+                        ->findOrFail($itemInput['id']);
                     $price = (float) $combo->price;
                     $lineTotal = $price * $qty;
                     $subtotal += $lineTotal;
@@ -150,7 +189,12 @@ class TableOrderController extends Controller
                         'notes' => null,
                     ];
                 } else {
-                    $product = Product::where('is_active', true)->findOrFail($itemInput['id']);
+                    $product = Product::where('is_active', true)
+                        ->where(function ($query) use ($table) {
+                            $query->whereNull('branch_id')
+                                ->orWhere('branch_id', $table->branch_id);
+                        })
+                        ->findOrFail($itemInput['id']);
                     $price = (float) $product->price;
                     $lineTotal = $price * $qty;
                     $subtotal += $lineTotal;

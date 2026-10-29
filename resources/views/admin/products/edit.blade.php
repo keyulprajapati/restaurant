@@ -25,13 +25,37 @@
 
                 <form
                     method="POST"
-                    action="{{ route('admin.products.update', $product) }}">
+                    action="{{ route('admin.products.update', $product) }}"
+                    enctype="multipart/form-data">
 
                     @csrf
                     @method('PUT')
 
 
                     <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" for="branch_id">
+                                Branch
+                            </label>
+                            <select
+                                name="branch_id"
+                                id="branch_id"
+                                class="form-select @error('branch_id') is-invalid @enderror"
+                                required>
+                                <option value="">Select branch</option>
+                                @foreach($branches as $branch)
+                                    <option
+                                        value="{{ $branch->id }}"
+                                        @selected((string) old('branch_id', $product->branch_id) === (string) $branch->id)>
+                                        {{ $branch->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('branch_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
                         <div class="col-md-6">
 
@@ -72,6 +96,42 @@
                                 placeholder="e.g. Paneer Pizza"
                                 required>
 
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" for="image">
+                                Product Image
+                            </label>
+                            @if($product->image_path)
+                                <div class="mb-3">
+                                    <img
+                                        src="{{ asset('storage/' . $product->image_path) }}"
+                                        alt="{{ $product->name }}"
+                                        class="rounded-3"
+                                        style="max-width: 180px; max-height: 180px; object-fit: cover;">
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input
+                                        type="checkbox"
+                                        name="remove_image"
+                                        id="remove_image"
+                                        value="1"
+                                        class="form-check-input"
+                                        @checked(old('remove_image'))>
+                                    <label class="form-check-label" for="remove_image">Remove current image</label>
+                                </div>
+                            @endif
+                            <input
+                                type="file"
+                                name="image"
+                                id="image"
+                                accept="image/jpeg,image/png,image/webp"
+                                class="form-control @error('image') is-invalid @enderror">
+                            <div class="form-text">Choose a new JPG, PNG, or WebP image to replace the current one. Maximum 2 MB.</div>
+                            @error('image')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <img id="imagePreview" class="mt-3 rounded-3 d-none" alt="Product image preview" style="max-width: 180px; max-height: 180px; object-fit: cover;">
                         </div>
 
 
@@ -257,3 +317,19 @@
 </div>
 
 @endsection
+
+@push('scripts')
+    <script>
+        document.getElementById('image')?.addEventListener('change', function () {
+            const preview = document.getElementById('imagePreview');
+            if (!this.files || !this.files[0]) {
+                preview.src = '';
+                preview.classList.add('d-none');
+                return;
+            }
+
+            preview.src = URL.createObjectURL(this.files[0]);
+            preview.classList.remove('d-none');
+        });
+    </script>
+@endpush

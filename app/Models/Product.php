@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     protected $fillable = [
+        'branch_id',
         'category_id',
         'name',
+        'image_path',
         'price',
         'size',
         'unit',
@@ -25,6 +27,11 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function getFormattedSizeAttribute(): string
